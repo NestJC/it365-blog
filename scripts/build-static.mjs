@@ -755,7 +755,7 @@ for (const lang of ['ko', 'en']) {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${lang === 'ko' ? 'IT365.kr — 글로벌 AI & 테크 인사이트' : 'IT365.kr — Global AI & Tech Insights'}</title>
+    <title>${lang === 'ko' ? 'IT365.kr — 글로벌 AI &amp; 테크 인사이트' : 'IT365.kr — Global AI &amp; Tech Insights'}</title>
     <link>${SITE_URL}/${lang === 'ko' ? '' : 'en/'}</link>
     <description>${
       lang === 'ko'
@@ -765,7 +765,7 @@ for (const lang of ['ko', 'en']) {
     <language>${lang === 'ko' ? 'ko' : 'en'}</language>
     <pubDate>${nowRfc822}</pubDate>
     <lastBuildDate>${nowRfc822}</lastBuildDate>
-    <atom:link href="${SITE_URL}/${lang}/rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${SITE_URL}/${lang === 'ko' ? 'rss.xml' : 'en/rss.xml'}" rel="self" type="application/rss+xml" />
 ${rssItems}
   </channel>
 </rss>`;
