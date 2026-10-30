@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="IT365.kr — 글로벌 AI & 빅테크 인사이트 미디어 (KO/EN)"
+  description="오픈AI, 구글, 앤트로픽 등 글로벌 AI 핫이슈와 삼성·애플 신제품 분석을 한국어(/ko/)와 영어(/en/)로 제공하는 테크 미디어입니다."
+  lang="ko"
+  canonicalUrl="https://it365.kr/"
+  koAlternateUrl="https://it365.kr/ko/"
+  enAlternateUrl="https://it365.kr/en/"
+>
+  <section class="hero-banner" style="text-align: center; padding: 4rem 1rem;">
+    <h1>IT365.kr — Global AI & Tech Media</h1>
+    <p style="max-width: 620px; margin: 0.75rem auto 2rem;">
+      글로벌 AI 모델 심층 분석과 빅테크 디바이스 소식을 한국어와 영어로 전달합니다.<br />
+      Select your preferred language edition below.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a
+        href="/ko/"
+        style="background: #1d4ed8; color: #fff; font-weight: 700; padding: 0.85rem 1.75rem; border-radius: 10px; text-decoration: none;"
+      >
+        🇰🇷 한국어 에디션 이동 (/ko/)
+      </a>
+      <a
+        href="/en/"
+        style="background: var(--surface); border: 1px solid var(--border); color: var(--text); font-weight: 700; padding: 0.85rem 1.75rem; border-radius: 10px; text-decoration: none;"
+      >
+        🇺🇸 English Edition (/en/)
+      </a>
+    </div>
+  </section>
+</BaseLayout>

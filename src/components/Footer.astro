@@ -1,0 +1,42 @@
+---
+export interface Props {
+  lang: 'ko' | 'en';
+}
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <strong>IT365.kr</strong>
+      <p>
+        {lang === 'ko'
+          ? '글로벌 AI 모델 벤치마크, 빅테크 신제품 분석 및 실전 활용 가이드를 제공하는 한/영 다국어 테크 미디어입니다.'
+          : 'Bilingual tech media covering global AI model benchmarks, Big Tech hardware analysis, and hands-on guides.'}
+      </p>
+    </div>
+    <div class="footer-links">
+      {lang === 'ko' ? (
+        <>
+          <a href="/ko/about/">미디어 소개 (About)</a>
+          <a href="/ko/privacy/">개인정보처리방침 (Privacy Policy)</a>
+          <a href="/ko/contact/">문의하기 (Contact)</a>
+          <a href="/ko/rss.xml">RSS 피드</a>
+          <a href="/en/">English Edition</a>
+        </>
+      ) : (
+        <>
+          <a href="/en/about/">About Us</a>
+          <a href="/en/privacy/">Privacy Policy</a>
+          <a href="/en/contact/">Contact</a>
+          <a href="/en/rss.xml">RSS Feed</a>
+          <a href="/ko/">한국어판 (Korean)</a>
+        </>
+      )}
+    </div>
+    <div class="footer-copy">
+      © {year} IT365.kr. All rights reserved.
+    </div>
+  </div>
+</footer>

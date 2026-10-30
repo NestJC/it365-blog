@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>개인정보처리방침 (Privacy Policy) | IT365.kr</title>
+  <meta name="description" content="개인정보처리방침 (Privacy Policy)" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://it365.kr/ko/privacy/" />
+  <link rel="alternate" hreflang="ko" href="https://it365.kr/ko/privacy/" />
+  <link rel="alternate" hreflang="en" href="https://it365.kr/en/privacy/" />
+  <link rel="alternate" hreflang="x-default" href="https://it365.kr/en/privacy/" />
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — 글로벌 AI & 테크 인사이트" href="https://it365.kr/ko/rss.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IT365.kr — 글로벌 AI & 테크 인사이트" />
+  <meta property="og:title" content="개인정보처리방침 (Privacy Policy) | IT365.kr" />
+  <meta property="og:description" content="개인정보처리방침 (Privacy Policy)" />
+  <meta property="og:url" content="https://it365.kr/ko/privacy/" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","headline":"개인정보처리방침 (Privacy Policy)","name":"IT365.kr — 글로벌 AI & 테크 인사이트","description":"개인정보처리방침 (Privacy Policy)","inLanguage":"ko-KR","url":"https://it365.kr/ko/privacy/"}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/ko/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">테크 & AI 미디어</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/ko/" class="nav-link">홈</a>
+               <a href="/ko/#ai-issue" class="nav-link">일간 AI 이슈</a>
+               <a href="/ko/#bigtech-weekly" class="nav-link">빅테크·루머</a>
+               <a href="/ko/about/" class="nav-link">소개</a>
+               <a href="/ko/contact/" class="nav-link">의견·문의</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/privacy/" class="lang-btn active">🇰🇷 한국어</a>
+          <a href="/en/privacy/" class="lang-btn ">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article class="article-container"><h1>개인정보처리방침 (Privacy Policy)</h1><p>최종 시행일: 2026년 10월 30일</p><p><strong>IT365.kr</strong>은 방문자의 개인정보를 중요하게 생각하며 관련 법령 및 Google AdSense 정책을 준수합니다.</p><h2>1. Google AdSense 및 쿠키 고지</h2><ul><li>Google을 포함한 제3자 광고 사업자는 쿠키를 사용하여 사용자의 이전 방문 기록을 기반으로 맞춤형 광고를 게재합니다.</li><li>사용자는 언제든지 <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google 광고 설정</a>에서 맞춤형 광고를 해제할 수 있습니다.</li></ul><h2>2. 제휴 마케팅 고지</h2><p>일부 한국어 기기 리뷰 글에는 쿠팡 파트너스 링크가 포함될 수 있으며 공정위 심사지침에 따른 대가성 문구를 명확히 표기합니다.</p></article>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>글로벌 AI 모델 벤치마크, 빅테크 신제품 분석 및 실전 활용 가이드를 제공하는 한/영 다국어 테크 미디어입니다.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/ko/about/">미디어 소개 (About)</a>
+               <a href="/ko/privacy/">개인정보처리방침 (Privacy Policy)</a>
+               <a href="/ko/contact/">의견 · 문의 보내기 (Contact)</a>
+               <a href="/ko/rss.xml">RSS 피드</a>
+               <a href="/en/">English Edition</a>
+      </div>
+      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+    });
+    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const label = btn.querySelector('[data-share-label]');
+        const orig = label?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (label) {
+            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+            setTimeout(() => { label.textContent = orig; }, 2000);
+          }
+        } catch {}
+      });
+    });
+  </script>
+</body>
+</html>

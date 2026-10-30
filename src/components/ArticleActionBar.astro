@@ -1,0 +1,66 @@
+---
+export interface Props {
+  lang: 'ko' | 'en';
+  title: string;
+}
+
+const { lang, title } = Astro.props;
+const contactUrl = lang === 'ko' ? '/ko/contact/' : '/en/contact/';
+---
+
+<div class="article-action-bar" aria-label={lang === 'ko' ? '독자 반응 및 공유' : 'Reader Actions'}>
+  <div class="action-bar-left">
+    <button type="button" class="action-btn btn-helpful" data-helpful-btn>
+      <span class="action-icon">👍</span>
+      <span class="action-label">
+        {lang === 'ko' ? '이 분석이 유용했어요' : 'Helpful Analysis'}
+      </span>
+      <span class="helpful-badge" data-helpful-count>+1</span>
+    </button>
+
+    <button type="button" class="action-btn btn-share" data-share-btn>
+      <span class="action-icon">🔗</span>
+      <span class="action-label" data-share-label>
+        {lang === 'ko' ? '링크 복사' : 'Copy Link'}
+      </span>
+    </button>
+  </div>
+
+  <div class="action-bar-right">
+    <a
+      href={`${contactUrl}?topic=${encodeURIComponent(title)}`}
+      class="action-btn btn-feedback"
+    >
+      <span class="action-icon">✉️</span>
+      <span class="action-label">
+        {lang === 'ko' ? '의견 · 문의 보내기' : 'Send Feedback / Inquiry'}
+      </span>
+    </a>
+  </div>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('is-active');
+    });
+  });
+
+  document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const label = btn.querySelector('[data-share-label]');
+      const origText = label ? label.textContent : '';
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (label) {
+          label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+          setTimeout(() => {
+            label.textContent = origText;
+          }, 2000);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  });
+</script>

@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import PostLayout from '../../../layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const enPosts = allPosts.filter((p) => p.data.lang === 'en');
+
+  return enPosts.map((post) => {
+    const cleanEnSlug = post.slug.replace(/^en\//, '');
+    const koPartner = allPosts.find(
+      (p) => p.data.lang === 'ko' && p.data.translationKey === post.data.translationKey
+    );
+    const cleanKoSlug = koPartner ? koPartner.slug.replace(/^ko\//, '') : undefined;
+
+    return {
+      params: { slug: cleanEnSlug },
+      props: {
+        post,
+        allPosts,
+        koPartnerSlug: cleanKoSlug,
+        enPartnerSlug: cleanEnSlug,
+      },
+    };
+  });
+}
+
+const { post, allPosts, koPartnerSlug, enPartnerSlug } = Astro.props;
+const { Content } = await post.render();
+---
+
+<PostLayout
+  post={post}
+  allPosts={allPosts}
+  koPartnerSlug={koPartnerSlug}
+  enPartnerSlug={enPartnerSlug}
+>
+  <Content />
+</PostLayout>

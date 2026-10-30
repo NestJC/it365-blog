@@ -1,0 +1,121 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  lang: 'ko' | 'en';
+  canonicalUrl?: string;
+  koAlternateUrl?: string;
+  enAlternateUrl?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  pubDate?: Date;
+  updatedDate?: Date;
+}
+
+const {
+  title,
+  description,
+  lang,
+  canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString(),
+  koAlternateUrl,
+  enAlternateUrl,
+  ogImage = '/favicon.svg',
+  ogType = 'website',
+  pubDate,
+  updatedDate,
+} = Astro.props;
+
+const siteName = lang === 'ko' ? 'IT365.kr — 글로벌 AI & 테크 인사이트' : 'IT365.kr — Global AI & Tech Insights';
+const fullTitle = title.includes('IT365') ? title : `${title} | IT365.kr`;
+const ogImageUrl = new URL(ogImage, Astro.site).toString();
+
+const jsonLd =
+  ogType === 'article'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'TechArticle',
+        headline: title,
+        description,
+        image: [ogImageUrl],
+        inLanguage: lang === 'ko' ? 'ko-KR' : 'en-US',
+        datePublished: pubDate ? pubDate.toISOString() : undefined,
+        dateModified: (updatedDate || pubDate)?.toISOString(),
+        author: {
+          '@type': 'Organization',
+          name: 'IT365 Editorial Team',
+          url: 'https://it365.kr',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'IT365.kr',
+          logo: {
+            '@type': 'ImageObject',
+            url: new URL('/favicon.svg', Astro.site).toString(),
+          },
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonicalUrl,
+        },
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: siteName,
+        url: canonicalUrl,
+        inLanguage: lang === 'ko' ? 'ko-KR' : 'en-US',
+      };
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+
+<!-- Self-Referencing Canonical Tag (중복 문서 판정 방지) -->
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- 다국어 hreflang 상호 참조 태그 -->
+{koAlternateUrl && <link rel="alternate" hreflang="ko" href={koAlternateUrl} />}
+{enAlternateUrl && <link rel="alternate" hreflang="en" href={enAlternateUrl} />}
+{enAlternateUrl && <link rel="alternate" hreflang="x-default" href={enAlternateUrl} />}
+{!enAlternateUrl && koAlternateUrl && <link rel="alternate" hreflang="x-default" href={koAlternateUrl} />}
+
+<!-- RSS Feed 자동 발견 -->
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={siteName}
+  href={lang === 'ko' ? 'https://it365.kr/ko/rss.xml' : 'https://it365.kr/en/rss.xml'}
+/>
+
+<!-- 검색엔진 소유권 확인 메타태그 (서치콘솔 / 네이버 서치어드바이저 발급 후 값 입력) -->
+<!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" /> -->
+<!-- <meta name="naver-site-verification" content="YOUR_NAVER_VERIFICATION_CODE" /> -->
+
+<!-- Open Graph / Social -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:locale" content={lang === 'ko' ? 'ko_KR' : 'en_US'} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<!-- 프리텐다드 & 인터 웹폰트 최적화 로드 -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
+
+<!-- 구조화 데이터 (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

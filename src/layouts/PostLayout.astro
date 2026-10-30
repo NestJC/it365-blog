@@ -1,0 +1,108 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import KeyTakeaways from '../components/KeyTakeaways.astro';
+import EditorInsight from '../components/EditorInsight.astro';
+import ArticleActionBar from '../components/ArticleActionBar.astro';
+import CoupangBox from '../components/CoupangBox.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
+
+export interface Props {
+  post: CollectionEntry<'blog'>;
+  allPosts: CollectionEntry<'blog'>[];
+  koPartnerSlug?: string;
+  enPartnerSlug?: string;
+}
+
+const { post, allPosts, koPartnerSlug, enPartnerSlug } = Astro.props;
+const {
+  title,
+  description,
+  lang,
+  category,
+  company,
+  pubDate,
+  updatedDate,
+  heroImage,
+  heroImageAlt,
+  takeaways,
+  editorNote,
+  coupangEnabled,
+  coupangItems,
+} = post.data;
+
+const koAlternateUrl = koPartnerSlug ? `https://it365.kr/ko/blog/${koPartnerSlug}/` : undefined;
+const enAlternateUrl = enPartnerSlug ? `https://it365.kr/en/blog/${enPartnerSlug}/` : undefined;
+
+const koSwitchUrl = koPartnerSlug ? `/ko/blog/${koPartnerSlug}/` : '/ko/';
+const enSwitchUrl = enPartnerSlug ? `/en/blog/${enPartnerSlug}/` : '/en/';
+
+const formattedDate = pubDate.toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  lang={lang}
+  koAlternateUrl={koAlternateUrl}
+  enAlternateUrl={enAlternateUrl}
+  koSwitchUrl={koSwitchUrl}
+  enSwitchUrl={enSwitchUrl}
+  ogImage={heroImage}
+  ogType="article"
+  pubDate={pubDate}
+  updatedDate={updatedDate}
+>
+  <article class="article-container">
+    <header class="article-header">
+      <div class="post-meta">
+        <span class="badge-company">{company}</span>
+        <span>•</span>
+        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+      </div>
+      <h1>{title}</h1>
+    </header>
+
+    {heroImage && (
+      <img
+        src={heroImage}
+        alt={heroImageAlt}
+        width="1200"
+        height="630"
+        loading="eager"
+        fetchpriority="high"
+        class="article-hero-img"
+      />
+    )}
+
+    <!-- 상단 핵심 3줄 요약 박스 (필수 규칙) -->
+    <KeyTakeaways lang={lang} takeaways={takeaways} />
+
+    <!-- 마크다운 본문 및 스펙 비교표 -->
+    <div class="article-content">
+      <slot />
+    </div>
+
+    <!-- 사용자 의견/경험이 반영된 E-E-A-T 에디터 인사이트 박스 (필수 규칙) -->
+    <EditorInsight lang={lang} editorNote={editorNote} />
+
+    <!-- 무거운 댓글창을 대체하는 1초 공감 + 링크 복사 + 의견/문의 보내기 바 -->
+    <ArticleActionBar lang={lang} title={title} />
+
+    <!-- 쿠팡파트너스 추천 박스 (한국어 + 스위치 ON 일 때만 노출, 공정위 문구 자동 삽입) -->
+    <CoupangBox lang={lang} coupangEnabled={coupangEnabled} coupangItems={coupangItems} />
+
+    <!-- 관련 이전 글 내부 링크 자동 엮기 -->
+    <RelatedPosts
+      lang={lang}
+      currentSlug={post.slug}
+      category={category}
+      company={company}
+      allPosts={allPosts}
+    />
+  </article>
+</BaseLayout>

@@ -1,0 +1,126 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const allEnPosts = (await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+function getCleanSlug(entrySlug: string) {
+  return entrySlug.replace(/^en\//, '');
+}
+
+const aiPosts = allEnPosts.filter((p) => p.data.category === 'ai-issue');
+const bigtechPosts = allEnPosts.filter((p) => p.data.category === 'bigtech-weekly');
+const handsonPosts = allEnPosts.filter((p) => p.data.category === 'hands-on');
+---
+
+<BaseLayout
+  title="IT365.kr English — Global AI Benchmarks, Pricing & Big Tech Analysis"
+  description="In-depth daily analysis of frontier AI models (OpenAI, Google, Anthropic), API pricing comparisons, and upcoming Big Tech hardware releases."
+  lang="en"
+  canonicalUrl="https://it365.kr/en/"
+  koAlternateUrl="https://it365.kr/ko/"
+  enAlternateUrl="https://it365.kr/en/"
+  koSwitchUrl="/ko/"
+  enSwitchUrl="/en/"
+>
+  <section class="hero-banner">
+    <h1>🇺🇸 IT365.kr — Global AI & Tech Insights</h1>
+    <p>Data-driven analysis of frontier AI models, side-by-side spec comparisons, and weekly Big Tech hardware roundups.</p>
+  </section>
+
+  <section id="ai-issue">
+    <div class="section-header">
+      <h2>🔥 Daily AI Model & Industry Analysis</h2>
+    </div>
+    <div class="post-grid">
+      {aiPosts.map((post) => (
+        <article class="post-card">
+          <div>
+            <div class="post-meta">
+              <span class="badge-company">{post.data.company}</span>
+              <span>•</span>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+            </div>
+            <h3>
+              <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+            </h3>
+            <p>{post.data.description}</p>
+          </div>
+          <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>Read Full Analysis →</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {bigtechPosts.length > 0 && (
+    <section id="bigtech-weekly">
+      <div class="section-header">
+        <h2>📱 Big Tech Upcoming Releases & Rumor Roundups</h2>
+      </div>
+      <div class="post-grid">
+        {bigtechPosts.map((post) => (
+          <article class="post-card">
+            <div>
+              <div class="post-meta">
+                <span class="badge-company">{post.data.company}</span>
+                <span>•</span>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+              <h3>
+                <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+              </h3>
+              <p>{post.data.description}</p>
+            </div>
+            <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>Read Roundup →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {handsonPosts.length > 0 && (
+    <section id="hands-on">
+      <div class="section-header">
+        <h2>🛠️ Hands-on AI Guides & Hardware Reviews</h2>
+      </div>
+      <div class="post-grid">
+        {handsonPosts.map((post) => (
+          <article class="post-card">
+            <div>
+              <div class="post-meta">
+                <span class="badge-company">{post.data.company}</span>
+                <span>•</span>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+              <h3>
+                <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+              </h3>
+              <p>{post.data.description}</p>
+            </div>
+            <a href={`/en/blog/${getCleanSlug(post.slug)}/`}>Read Guide →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

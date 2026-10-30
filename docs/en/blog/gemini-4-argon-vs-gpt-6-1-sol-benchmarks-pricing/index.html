@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks | IT365.kr</title>
+  <meta name="description" content="A data-driven comparison of Google DeepMind's Gemini 4 Argon and OpenAI's GPT-6.1 Sol across context windows, Long Decode output limits, API caching costs, and real-world writing performance." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  <link rel="alternate" hreflang="ko" href="https://it365.kr/ko/blog/gemini-4-argon-vs-gpt-6-1-sol/" />
+  <link rel="alternate" hreflang="en" href="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  <link rel="alternate" hreflang="x-default" href="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — Global AI & Tech Insights" href="https://it365.kr/en/rss.xml" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="IT365.kr — Global AI & Tech Insights" />
+  <meta property="og:title" content="Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks | IT365.kr" />
+  <meta property="og:description" content="A data-driven comparison of Google DeepMind's Gemini 4 Argon and OpenAI's GPT-6.1 Sol across context windows, Long Decode output limits, API caching costs, and real-world writing performance." />
+  <meta property="og:url" content="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks","name":"IT365.kr — Global AI & Tech Insights","description":"A data-driven comparison of Google DeepMind's Gemini 4 Argon and OpenAI's GPT-6.1 Sol across context windows, Long Decode output limits, API caching costs, and real-world writing performance.","inLanguage":"en-US","datePublished":"2026-10-30T21:00:00+09:00","url":"https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/"}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/en/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">Tech & AI Media</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/en/" class="nav-link">Home</a>
+               <a href="/en/#ai-issue" class="nav-link">Daily AI News</a>
+               <a href="/en/#bigtech-weekly" class="nav-link">Big Tech & Rumors</a>
+               <a href="/en/about/" class="nav-link">About</a>
+               <a href="/en/contact/" class="nav-link">Feedback</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/blog/gemini-4-argon-vs-gpt-6-1-sol/" class="lang-btn ">🇰🇷 한국어</a>
+          <a href="/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" class="lang-btn active">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article class="article-container">
+    <header class="article-header">
+      <div class="post-meta">
+        <span class="badge-company">Google / OpenAI</span>
+        <span>•</span>
+        <time datetime="2026-10-30T21:00:00+09:00">2026-10-30</time>
+      </div>
+      <h1>Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks</h1>
+    </header>
+    <aside class="takeaways-box">
+          <div class="takeaways-title"><span>📌</span><strong>Key Takeaways at a Glance</strong></div>
+          <ul class="takeaways-list"><li>Both models share identical base API pricing at $2 per 1M input tokens and $10 per 1M output tokens, with up to 95% savings via prompt caching.</li><li>Gemini 4 Argon supports up to 1M tokens of continuous output (Long Decode), vastly outscaling GPT-6.1 Sol's 12,800-token output cap.</li><li>GPT-6.1 Sol excels at strict formatting and concise copywriting at xhigh effort, while Gemini 4 Argon dominates multi-document synthesis and batch series generation.</li></ul>
+        </aside>
+    <div class="article-content">
+      <p>Google DeepMind's <strong>Gemini 4 Argon</strong> and OpenAI's <strong>GPT-6.1 Sol</strong> go head-to-head at the exact same API price point. While both frontier reasoning models offer roughly 1 million tokens of input context, their <strong>maximum output capacity</strong> and <strong>writing characteristics</strong> diverge sharply.</p>
+<h2>1. Side-by-Side Specs & API Pricing Comparison</h2>
+<table><thead><tr><th>Feature / Metric</th><th>Gemini 4 Argon (Google DeepMind)</th><th>GPT-6.1 Sol (OpenAI)</th></tr></thead><tbody>
+<tr><td><strong>Context Window (Input)</strong></td><td>~1,000,000 tokens</td><td>~1,050,000 tokens</td></tr>
+<tr><td><strong>Max Output Tokens</strong></td><td><strong>Up to 1,000,000 tokens (Long Decode)</strong></td><td>12,800 tokens</td></tr>
+<tr><td><strong>Base API Price (per 1M tokens)</strong></td><td>$2.00 Input / $10.00 Output</td><td>$2.00 Input / $10.00 Output</td></tr>
+<tr><td><strong>Cached Input Pricing</strong></td><td>Up to 95% discount</td><td>$0.10 / 1M tokens (95% discount)</td></tr>
+<tr><td><strong>Writing Benchmark Highlights</strong></td><td>76.2/100 on ToneBench (<code>High</code> effort)</td><td>~1976 Elo on blind script tests (<code>xhigh</code> effort)</td></tr>
+<tr><td><strong>Primary Strengths</strong></td><td>Long-horizon synthesis, batch content, agentic coding</td><td>Strict instruction adherence, clean prose formatting</td></tr>
+</tbody></table>
+<h2>2. Real-World Performance Breakdown</h2>
+<h3>① Long-Form Synthesis & Batch Output (Gemini 4 Argon Leads)</h3>
+<ul>
+<li><strong>Massive Output Headroom:</strong> Because <code>GPT-6.1 Sol</code> caps single-turn responses at 12,800 tokens, generating multi-part technical documentation requires chunked API calls.</li>
+<li><strong>Long Decode Advantage:</strong> <code>Gemini 4 Argon</code> can ingest ratusan pages of technical references and output an exhaustive, multi-chapter report or a batch of 5–10 full-length articles in a single pass.</li>
+</ul>
+<h3>② Instruction Adherence & Prose Styling (GPT-6.1 Sol Advantage)</h3>
+<ul>
+<li><strong>Zero-Shot Formatting:</strong> Out of the box, <code>GPT-6.1 Sol</code> adheres tightly to complex structural constraints (such as exact heading counts, word limits, and JSON schemas).</li>
+<li><strong>Optimizing Argon for Publishing:</strong> Pairing <code>Gemini 4 Argon</code> with structured output schemas (<code>response_schema</code>) and one or two few-shot prose samples bridges the stylistic gap while retaining Argon's superior synthesis depth.</li>
+</ul>
+
+    </div>
+    <section class="editor-insight-box">
+        <div class="editor-insight-header">
+          <span class="editor-badge">💡 E-E-A-T Verified</span>
+          <strong>IT365 Editor's Perspective</strong>
+        </div>
+        <p class="editor-insight-text">In our hands-on testing within the Antigravity agent environment using a Gemini Pro subscription, Gemini 4 Argon delivered exceptional multi-source synthesis at zero additional per-token API cost. Adding 1–2 few-shot style examples completely smoothed out Argon's default academic tone.</p>
+      </section>
+    <div class="article-action-bar">
+    <div class="action-bar-left">
+      <button type="button" class="action-btn" data-helpful-btn>
+        <span>👍</span>
+        <span>Helpful Analysis</span>
+        <span class="helpful-badge">+1</span>
+      </button>
+      <button type="button" class="action-btn" data-share-btn>
+        <span>🔗</span>
+        <span data-share-label>Copy Link</span>
+      </button>
+    </div>
+    <div class="action-bar-right">
+      <a href="/en/contact/" class="action-btn">
+        <span>✉️</span>
+        <span>Send Feedback / Inquiry</span>
+      </a>
+    </div>
+  </div>
+  </article>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>Bilingual tech media covering global AI model benchmarks, Big Tech hardware analysis, and hands-on guides.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/en/about/">About Us</a>
+               <a href="/en/privacy/">Privacy Policy</a>
+               <a href="/en/contact/">Feedback & Contact</a>
+               <a href="/en/rss.xml">RSS Feed</a>
+               <a href="/ko/">한국어판 (Korean)</a>
+      </div>
+      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+    });
+    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const label = btn.querySelector('[data-share-label]');
+        const orig = label?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (label) {
+            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+            setTimeout(() => { label.textContent = orig; }, 2000);
+          }
+        } catch {}
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+---
+export interface Props {
+  lang: 'ko' | 'en';
+  editorNote: string;
+}
+const { lang, editorNote } = Astro.props;
+---
+
+{editorNote && (
+  <section class="editor-insight-box" aria-label={lang === 'ko' ? '에디터 인사이트' : "Editor's Perspective"}>
+    <div class="editor-insight-header">
+      <span class="editor-badge">💡 E-E-A-T Verified</span>
+      <strong>
+        {lang === 'ko' ? 'IT365 에디터 인사이트 & 실전 코멘트' : "IT365 Editor's Perspective"}
+      </strong>
+    </div>
+    <p class="editor-insight-text">{editorNote}</p>
+  </section>
+)}

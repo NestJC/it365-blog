@@ -1,0 +1,61 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  lang: 'ko' | 'en';
+  canonicalUrl?: string;
+  koAlternateUrl?: string;
+  enAlternateUrl?: string;
+  koSwitchUrl?: string;
+  enSwitchUrl?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  pubDate?: Date;
+  updatedDate?: Date;
+}
+
+const {
+  title,
+  description,
+  lang,
+  canonicalUrl,
+  koAlternateUrl,
+  enAlternateUrl,
+  koSwitchUrl,
+  enSwitchUrl,
+  ogImage,
+  ogType,
+  pubDate,
+  updatedDate,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <SEOHead
+      title={title}
+      description={description}
+      lang={lang}
+      canonicalUrl={canonicalUrl}
+      koAlternateUrl={koAlternateUrl}
+      enAlternateUrl={enAlternateUrl}
+      ogImage={ogImage}
+      ogType={ogType}
+      pubDate={pubDate}
+      updatedDate={updatedDate}
+    />
+  </head>
+  <body>
+    <Header lang={lang} koSwitchUrl={koSwitchUrl} enSwitchUrl={enSwitchUrl} />
+    <main class="container">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>

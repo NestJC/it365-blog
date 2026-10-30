@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  lang: 'ko' | 'en';
+  currentSlug: string;
+  category: string;
+  company: string;
+  allPosts: CollectionEntry<'blog'>[];
+}
+
+const { lang, currentSlug, category, company, allPosts } = Astro.props;
+
+const sameLangPosts = allPosts.filter(
+  (p) => p.data.lang === lang && !p.data.draft && p.slug !== currentSlug
+);
+
+const scored = sameLangPosts
+  .map((post) => {
+    let score = 0;
+    if (post.data.company.toLowerCase() === company.toLowerCase()) score += 3;
+    if (post.data.category === category) score += 2;
+    return { post, score };
+  })
+  .sort((a, b) => b.score - a.score || b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf())
+  .slice(0, 3);
+
+function getCleanSlug(entrySlug: string) {
+  return entrySlug.replace(/^(ko|en)\//, '');
+}
+---
+
+{scored.length > 0 && (
+  <nav class="related-posts-box" aria-label={lang === 'ko' ? '함께 읽으면 좋은 글' : 'Related Articles'}>
+    <h2 class="related-title">
+      {lang === 'ko' ? '👉 함께 읽으면 좋은 관련 분석 글' : '👉 Related Tech & AI Analysis'}
+    </h2>
+    <ul class="related-list">
+      {scored.map(({ post }) => (
+        <li>
+          <a href={`/${lang}/blog/${getCleanSlug(post.slug)}/`} class="related-link">
+            <span class="related-company">[{post.data.company}]</span>
+            <span class="related-post-title">{post.data.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}

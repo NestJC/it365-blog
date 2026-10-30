@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>About Us | IT365.kr</title>
+  <meta name="description" content="About Us" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://it365.kr/en/about/" />
+  <link rel="alternate" hreflang="ko" href="https://it365.kr/ko/about/" />
+  <link rel="alternate" hreflang="en" href="https://it365.kr/en/about/" />
+  <link rel="alternate" hreflang="x-default" href="https://it365.kr/en/about/" />
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — Global AI & Tech Insights" href="https://it365.kr/en/rss.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IT365.kr — Global AI & Tech Insights" />
+  <meta property="og:title" content="About Us | IT365.kr" />
+  <meta property="og:description" content="About Us" />
+  <meta property="og:url" content="https://it365.kr/en/about/" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","headline":"About Us","name":"IT365.kr — Global AI & Tech Insights","description":"About Us","inLanguage":"en-US","url":"https://it365.kr/en/about/"}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/en/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">Tech & AI Media</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/en/" class="nav-link">Home</a>
+               <a href="/en/#ai-issue" class="nav-link">Daily AI News</a>
+               <a href="/en/#bigtech-weekly" class="nav-link">Big Tech & Rumors</a>
+               <a href="/en/about/" class="nav-link">About</a>
+               <a href="/en/contact/" class="nav-link">Feedback</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/about/" class="lang-btn ">🇰🇷 한국어</a>
+          <a href="/en/about/" class="lang-btn active">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article class="article-container"><h1>About IT365.kr</h1><p><strong>IT365.kr</strong> is a bilingual technology media publication covering frontier AI models, developer tools, and Big Tech hardware in both English (<code>/en/</code>) and Korean (<code>/ko/</code>).</p><h2>Our Editorial Standards</h2><ul><li><strong>Data-First Comparisons:</strong> Every article includes structured specification tables, verified API pricing, and benchmark metrics.</li><li><strong>Human-in-the-Loop Verification:</strong> Every post features an Editor's Perspective section reflecting hands-on testing and practical evaluation.</li></ul></article>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>Bilingual tech media covering global AI model benchmarks, Big Tech hardware analysis, and hands-on guides.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/en/about/">About Us</a>
+               <a href="/en/privacy/">Privacy Policy</a>
+               <a href="/en/contact/">Feedback & Contact</a>
+               <a href="/en/rss.xml">RSS Feed</a>
+               <a href="/ko/">한국어판 (Korean)</a>
+      </div>
+      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+    });
+    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const label = btn.querySelector('[data-share-label]');
+        const orig = label?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (label) {
+            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+            setTimeout(() => { label.textContent = orig; }, 2000);
+          }
+        } catch {}
+      });
+    });
+  </script>
+</body>
+</html>

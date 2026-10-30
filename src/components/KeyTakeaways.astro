@@ -1,0 +1,21 @@
+---
+export interface Props {
+  lang: 'ko' | 'en';
+  takeaways: string[];
+}
+const { lang, takeaways } = Astro.props;
+---
+
+{takeaways && takeaways.length > 0 && (
+  <aside class="takeaways-box" aria-label={lang === 'ko' ? '핵심 요약' : 'Key Takeaways'}>
+    <div class="takeaways-title">
+      <span>📌</span>
+      <strong>{lang === 'ko' ? '바쁜 독자를 위한 핵심 3줄 요약' : 'Key Takeaways at a Glance'}</strong>
+    </div>
+    <ul class="takeaways-list">
+      {takeaways.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  </aside>
+)}

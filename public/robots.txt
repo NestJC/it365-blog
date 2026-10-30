@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://it365.kr/sitemap-index.xml
+Sitemap: https://it365.kr/ko/rss.xml
+Sitemap: https://it365.kr/en/rss.xml

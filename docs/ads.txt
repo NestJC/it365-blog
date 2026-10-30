@@ -1,0 +1,3 @@
+# Google AdSense ads.txt for IT365.kr
+# 애드센스 사이트 추가 시 본인의 게시자 ID(pub-XXXXXXXXXXXXXXXX)로 교체하세요.
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

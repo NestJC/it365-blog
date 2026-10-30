@@ -1,0 +1,47 @@
+---
+export interface CoupangItem {
+  name: string;
+  summary: string;
+  priceHint?: string;
+  url: string;
+}
+
+export interface Props {
+  lang: 'ko' | 'en';
+  coupangEnabled: boolean;
+  coupangItems?: CoupangItem[];
+}
+
+const { lang, coupangEnabled, coupangItems = [] } = Astro.props;
+const shouldRender = lang === 'ko' && coupangEnabled && coupangItems.length > 0;
+---
+
+{shouldRender && (
+  <aside class="coupang-box" aria-label="관련 추천 제품 안내">
+    <div class="coupang-header">
+      <strong>🛒 관련 디바이스 최저가 및 사전예약 확인</strong>
+    </div>
+    <div class="coupang-items">
+      {coupangItems.map((item) => (
+        <div class="coupang-item">
+          <div class="coupang-item-info">
+            <div class="coupang-item-name">{item.name}</div>
+            <div class="coupang-item-summary">{item.summary}</div>
+            {item.priceHint && <div class="coupang-item-price">{item.priceHint}</div>}
+          </div>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            class="coupang-cta-btn"
+          >
+            실시간 가격 및 혜택 보기 →
+          </a>
+        </div>
+      ))}
+    </div>
+    <p class="coupang-disclosure">
+      ※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+    </p>
+  </aside>
+)}

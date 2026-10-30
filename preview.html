@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IT365.kr — 즉시 미리보기 (한국어 / English / 쿠팡 스위치 체험)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link rel="stylesheet" href="./src/styles/global.css" />
+    <style>
+      .preview-toolbar {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 0.65rem 1.25rem;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .preview-toolbar-btns {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .preview-chip {
+        background: #1e293b;
+        color: #e2e8f0;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        padding: 0.3rem 0.7rem;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .preview-chip.active {
+        background: #2563eb;
+        border-color: #3b82f6;
+        color: #fff;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 상단 미리보기 컨트롤 바 -->
+    <div class="preview-toolbar">
+      <div>
+        <strong>👀 IT365.kr 실시간 인터랙티브 미리보기</strong> (설치 없이 브라우저에서 바로 화면 구성을 확인하세요)
+      </div>
+      <div class="preview-toolbar-btns">
+        <button class="preview-chip active" id="btn-view-post" onclick="setView('post')">
+          📄 본문 상세 페이지 보기
+        </button>
+        <button class="preview-chip" id="btn-view-home" onclick="setView('home')">
+          🏠 메인 홈 화면 보기
+        </button>
+        <button class="preview-chip" id="btn-toggle-coupang" onclick="toggleCoupang()">
+          🛒 쿠팡파트너스 스위치: OFF (클릭해 ON 체험)
+        </button>
+      </div>
+    </div>
+
+    <!-- 실제 사이트 헤더 -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#" class="brand" onclick="setView('home'); return false;">
+          <span class="brand-badge">IT365</span>
+          <span class="brand-text" id="brand-subtitle">테크 & AI 미디어</span>
+        </a>
+        <nav class="main-nav">
+          <a href="#" class="nav-link" onclick="setView('home'); return false;">홈 (Home)</a>
+          <a href="#" class="nav-link" onclick="setView('post'); return false;">일간 AI 이슈</a>
+          <a href="#" class="nav-link">빅테크·루머</a>
+          <a href="#" class="nav-link">실전 활용기</a>
+        </nav>
+        <div class="header-actions">
+          <div class="lang-switcher">
+            <a href="#" class="lang-btn active" id="lang-ko" onclick="setLang('ko'); return false;">🇰🇷 한국어</a>
+            <a href="#" class="lang-btn" id="lang-en" onclick="setLang('en'); return false;">🇺🇸 EN</a>
+          </div>
+          <button id="theme-toggle" class="theme-btn" type="button" onclick="toggleTheme()">🌓</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- 1. 한국어 본문 상세 뷰 -->
+      <article id="view-ko-post" class="article-container">
+        <header class="article-header">
+          <div class="post-meta">
+            <span class="badge-company">Google / OpenAI</span>
+            <span>•</span>
+            <time>2026년 10월 30일</time>
+            <span>•</span>
+            <span style="color: var(--accent-emerald); font-weight: 700;">hreflang="ko" ↔ "en" 연동됨</span>
+          </div>
+          <h1>Gemini 4 Argon vs GPT-6.1 Sol 완벽 비교: API 가격, 출력 한도, 글쓰기·코딩 성능 분석</h1>
+        </header>
+
+        <aside class="takeaways-box">
+          <div class="takeaways-title">
+            <span>📌</span>
+            <strong>바쁜 독자를 위한 핵심 3줄 요약</strong>
+          </div>
+          <ul class="takeaways-list">
+            <li>기본 API 단가는 두 모델 모두 입력 100만 토큰당 $2, 출력 100만 토큰당 $10으로 동일하며 프롬프트 캐싱 시 최대 95%까지 절감됩니다.</li>
+            <li>최대 연속 출력(Max Output)에서는 최대 100만 토큰 연속 생성(Long Decode)을 지원하는 Gemini 4 Argon이 GPT-6.1 Sol(12,800 토큰) 대비 압도적 우위를 점합니다.</li>
+            <li>단일 아티클의 포맷 준수율과 카피라이팅에서는 GPT-6.1 Sol이 강점을 보이며, 대용량 레퍼런스 종합 및 시리즈 원고 일괄 생성에서는 Gemini 4 Argon이 유리합니다.</li>
+          </ul>
+        </aside>
+
+        <div class="article-content">
+          <p>
+            구글 딥마인드의 <strong>Gemini 4 Argon</strong>과 오픈AI의 <strong>GPT-6.1 Sol</strong>은 동일한 가격대에서 정면 승부를 벌이고 있는 주력 프론티어 추론 모델입니다. 두 모델 모두 약 100만 토큰급 입력 컨텍스트를 지원하지만, <strong>최대 출력 길이(Output Limit)</strong>와 <strong>문서 작성 성향</strong>에서는 분명한 차이를 보입니다.
+          </p>
+
+          <h2>1. 핵심 스펙 및 API 가격 비교표</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>비교 항목</th>
+                <th>Gemini 4 Argon (Google DeepMind)</th>
+                <th>GPT-6.1 Sol (OpenAI)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>입력 컨텍스트 윈도우</strong></td>
+                <td>약 1,000,000 토큰</td>
+                <td>약 1,050,000 토큰</td>
+              </tr>
+              <tr>
+                <td><strong>최대 연속 출력 (Max Output)</strong></td>
+                <td><strong>최대 1,000,000 토큰 (Long Decode)</strong></td>
+                <td>최대 12,800 토큰</td>
+              </tr>
+              <tr>
+                <td><strong>기본 API 요금 (1M 토큰당)</strong></td>
+                <td>입력 $2.00 / 출력 $10.00</td>
+                <td>입력 $2.00 / 출력 $10.00</td>
+              </tr>
+              <tr>
+                <td><strong>캐시 입력 요금 (Prompt Caching)</strong></td>
+                <td>최대 95% 할인 적용</td>
+                <td>$0.10 / 1M 토큰 (95% 할인)</td>
+              </tr>
+              <tr>
+                <td><strong>작문 벤치마크 (ToneBench / Elo)</strong></td>
+                <td>ToneBench 76.2점 (<code>High</code> 추론 기준)</td>
+                <td>창작 스크립트 블라인드 평가 Elo 1976 (<code>xhigh</code> 기준)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>2. 영역별 실전 성능 차이</h2>
+          <ul>
+            <li><strong>초장문 출력 및 방대한 자료 종합 (Gemini 4 Argon 우세):</strong> 수백 페이지 분량의 PDF나 복수의 기술 문서를 입력받아 중간 생략 없이 한 번에 장문 리포트로 뽑아내는 작업에 최적화되어 있습니다.</li>
+            <li><strong>정교한 지시문 준수 및 단문 가독성 (GPT-6.1 Sol 강점):</strong> 소제목 키워드 배치, 글자 수 제한, 금칙어 필터링 등 까다로운 SEO 제약 조건을 동시에 걸었을 때의 기본 준수율이 안정적입니다.</li>
+          </ul>
+        </div>
+
+        <section class="editor-insight-box">
+          <div class="editor-insight-header">
+            <span class="editor-badge">💡 E-E-A-T Verified</span>
+            <strong>IT365 에디터 인사이트 & 실전 코멘트</strong>
+          </div>
+          <p class="editor-insight-text">
+            실제 제미나이 Pro 구독 환경과 안티그래비티(Antigravity) 에이전트 워크플로우에서 테스트해 본 결과, 별도 종량제 API 과금 없이도 Gemini 4 Argon의 긴 컨텍스트 유지력과 Few-shot 문체 복제 능력을 그대로 활용할 수 있어 개인 미디어 자동화 가성비가 매우 뛰어났습니다.
+          </p>
+        </section>
+
+        <!-- 댓글창을 대체하는 1초 공감 + 링크 복사 + 의견/문의 보내기 바 -->
+        <div class="article-action-bar">
+          <div class="action-bar-left">
+            <button type="button" class="action-btn" onclick="this.classList.toggle('is-active')">
+              <span>👍</span>
+              <span>이 분석이 유용했어요</span>
+              <span class="helpful-badge">+1</span>
+            </button>
+            <button type="button" class="action-btn" onclick="this.querySelector('.copy-txt').textContent='주소 복사 완료! ✓'">
+              <span>🔗</span>
+              <span class="copy-txt">링크 복사</span>
+            </button>
+          </div>
+          <div class="action-bar-right">
+            <a href="mailto:minung2073@gmail.com?subject=[IT365 의견 및 문의]" class="action-btn">
+              <span>✉️</span>
+              <span>의견 · 문의 보내기</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 쿠팡 스위치 ON 체험 시 나타나는 영역 -->
+        <aside id="demo-coupang-box" class="coupang-box hidden">
+          <div class="coupang-header">
+            <strong>🛒 관련 디바이스 최저가 및 사전예약 확인 (한국어 페이지 20% 리뷰 글 전용)</strong>
+          </div>
+          <div class="coupang-item">
+            <div class="coupang-item-info">
+              <div class="coupang-item-name">Apple 맥북 프로 16 M4 Pro (AI 로컬 개발 추천 사양)</div>
+              <div class="coupang-item-summary">통합 메모리 36GB / 1TB SSD • 로켓배송 및 카드 즉시할인 적용 모델</div>
+            </div>
+            <a href="#coupang-demo" class="coupang-cta-btn">실시간 가격 및 혜택 보기 →</a>
+          </div>
+          <p class="coupang-disclosure">
+            ※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+          </p>
+        </aside>
+
+        <nav class="related-posts-box">
+          <h2 class="related-title">👉 함께 읽으면 좋은 관련 분석 글</h2>
+          <ul class="related-list">
+            <li>
+              <a href="#" class="related-link">
+                <span class="related-company">[Anthropic]</span>
+                <span>클로드 4.5 업데이트 주요 변화 및 코딩 벤치마크 총정리</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="related-link">
+                <span class="related-company">[Samsung / Apple]</span>
+                <span>일요일 빅테크 브리핑: 차세대 온디바이스 AI 스마트폰 출시 일정 비교</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </article>
+
+      <!-- 2. 영어 본문 상세 뷰 (/en/) -->
+      <article id="view-en-post" class="article-container hidden">
+        <header class="article-header">
+          <div class="post-meta">
+            <span class="badge-company">Google / OpenAI</span>
+            <span>•</span>
+            <time>October 30, 2026</time>
+            <span>•</span>
+            <span style="color: var(--accent-emerald); font-weight: 700;">Localized Slug & Title (/en/)</span>
+          </div>
+          <h1>Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks</h1>
+        </header>
+
+        <aside class="takeaways-box">
+          <div class="takeaways-title">
+            <span>📌</span>
+            <strong>Key Takeaways at a Glance</strong>
+          </div>
+          <ul class="takeaways-list">
+            <li>Both models share identical base API pricing at $2 per 1M input tokens and $10 per 1M output tokens, with up to 95% savings via prompt caching.</li>
+            <li>Gemini 4 Argon supports up to 1M tokens of continuous output (Long Decode), vastly outscaling GPT-6.1 Sol's 12,800-token output cap.</li>
+            <li>GPT-6.1 Sol excels at strict formatting and concise copywriting at xhigh effort, while Gemini 4 Argon dominates multi-document synthesis.</li>
+          </ul>
+        </aside>
+
+        <div class="article-content">
+          <p>
+            Google DeepMind's <strong>Gemini 4 Argon</strong> and OpenAI's <strong>GPT-6.1 Sol</strong> go head-to-head at the exact same API price point. While both frontier reasoning models offer roughly 1 million tokens of input context, their <strong>maximum output capacity</strong> and <strong>writing characteristics</strong> diverge sharply.
+          </p>
+
+          <h2>1. Side-by-Side Specs & API Pricing Comparison</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature / Metric</th>
+                <th>Gemini 4 Argon (Google DeepMind)</th>
+                <th>GPT-6.1 Sol (OpenAI)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Context Window (Input)</strong></td>
+                <td>~1,000,000 tokens</td>
+                <td>~1,050,000 tokens</td>
+              </tr>
+              <tr>
+                <td><strong>Max Output Tokens</strong></td>
+                <td><strong>Up to 1,000,000 tokens (Long Decode)</strong></td>
+                <td>12,800 tokens</td>
+              </tr>
+              <tr>
+                <td><strong>Base API Price (per 1M tokens)</strong></td>
+                <td>$2.00 Input / $10.00 Output</td>
+                <td>$2.00 Input / $10.00 Output</td>
+              </tr>
+              <tr>
+                <td><strong>Cached Input Pricing</strong></td>
+                <td>Up to 95% discount</td>
+                <td>$0.10 / 1M tokens (95% discount)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <section class="editor-insight-box">
+          <div class="editor-insight-header">
+            <span class="editor-badge">💡 E-E-A-T Verified</span>
+            <strong>IT365 Editor's Perspective</strong>
+          </div>
+          <p class="editor-insight-text">
+            In our hands-on testing within the Antigravity agent environment using a Gemini Pro subscription, Gemini 4 Argon delivered exceptional multi-source synthesis at zero additional per-token API cost. Adding 1–2 few-shot style examples completely smoothed out Argon's default academic tone.
+          </p>
+        </section>
+      </article>
+
+      <!-- 3. 메인 홈 화면 뷰 -->
+      <section id="view-home" class="hidden">
+        <div class="hero-banner">
+          <h1>🇰🇷 IT365.kr — 글로벌 AI & 테크 인사이트</h1>
+          <p>매일 아침 글로벌 AI 핵심 이슈를 기업별로 심층 분석하고, 매주 빅테크 신제품 스펙과 실전 활용기를 전달합니다.</p>
+        </div>
+        <div class="section-header">
+          <h2>🔥 오늘의 글로벌 AI 이슈 (기업별 심층 분석)</h2>
+        </div>
+        <div class="post-grid">
+          <article class="post-card">
+            <div>
+              <div class="post-meta">
+                <span class="badge-company">Google / OpenAI</span>
+                <span>•</span>
+                <time>2026. 10. 30.</time>
+              </div>
+              <h3>
+                <a href="#" onclick="setView('post'); return false;">
+                  Gemini 4 Argon vs GPT-6.1 Sol 완벽 비교: API 가격, 출력 한도, 글쓰기·코딩 성능 분석
+                </a>
+              </h3>
+              <p>구글 딥마인드의 Gemini 4 Argon과 오픈AI의 GPT-6.1 Sol 모델의 컨텍스트 윈도우, 최대 연속 출력(Long Decode), API 캐시 비용을 비교합니다.</p>
+            </div>
+            <a href="#" onclick="setView('post'); return false;">상세 스펙 및 분석 읽기 →</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <strong>IT365.kr</strong> — 한/영 다국어 AI & 테크 미디어
+        <div class="footer-links">
+          <a href="#">미디어 소개 (About)</a>
+          <a href="#">개인정보처리방침 (Privacy Policy)</a>
+          <a href="#">문의하기 (Contact)</a>
+          <a href="#">RSS 피드</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      let currentLang = 'ko';
+      let currentView = 'post';
+      let coupangOn = false;
+
+      function updateRender() {
+        document.getElementById('view-ko-post').classList.toggle('hidden', !(currentView === 'post' && currentLang === 'ko'));
+        document.getElementById('view-en-post').classList.toggle('hidden', !(currentView === 'post' && currentLang === 'en'));
+        document.getElementById('view-home').classList.toggle('hidden', currentView !== 'home');
+        document.getElementById('lang-ko').classList.toggle('active', currentLang === 'ko');
+        document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+        document.getElementById('btn-view-post').classList.toggle('active', currentView === 'post');
+        document.getElementById('btn-view-home').classList.toggle('active', currentView === 'home');
+        document.getElementById('demo-coupang-box').classList.toggle('hidden', !(coupangOn && currentLang === 'ko'));
+      }
+
+      function setLang(lang) {
+        currentLang = lang;
+        updateRender();
+      }
+
+      function setView(view) {
+        currentView = view;
+        updateRender();
+      }
+
+      function toggleCoupang() {
+        coupangOn = !coupangOn;
+        const btn = document.getElementById('btn-toggle-coupang');
+        btn.textContent = coupangOn
+          ? '🛒 쿠팡파트너스 스위치: ON (공정위 문구 자동 표시 중)'
+          : '🛒 쿠팡파트너스 스위치: OFF (클릭해 ON 체험)';
+        btn.classList.toggle('active', coupangOn);
+        if (currentLang === 'en' && coupangOn) {
+          alert('영문(/en/) 페이지에서는 규칙에 따라 쿠팡파트너스 박스가 자동으로 숨겨집니다. 한국어(/ko/) 탭에서 확인해 보세요!');
+        }
+        updateRender();
+      }
+
+      function toggleTheme() {
+        const cur = document.documentElement.getAttribute('data-theme');
+        document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+      }
+    </script>
+  </body>
+</html>

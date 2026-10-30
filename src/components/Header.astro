@@ -1,0 +1,79 @@
+---
+export interface Props {
+  lang: 'ko' | 'en';
+  koSwitchUrl?: string;
+  enSwitchUrl?: string;
+}
+
+const { lang, koSwitchUrl = '/ko/', enSwitchUrl = '/en/' } = Astro.props;
+
+const navItems =
+  lang === 'ko'
+    ? [
+        { label: '홈', href: '/ko/' },
+        { label: '일간 AI 이슈', href: '/ko/#ai-issue' },
+        { label: '빅테크·루머', href: '/ko/#bigtech-weekly' },
+        { label: '실전 활용기', href: '/ko/#hands-on' },
+        { label: '소개', href: '/ko/about/' },
+      ]
+    : [
+        { label: 'Home', href: '/en/' },
+        { label: 'Daily AI News', href: '/en/#ai-issue' },
+        { label: 'Big Tech & Rumors', href: '/en/#bigtech-weekly' },
+        { label: 'Hands-on Guides', href: '/en/#hands-on' },
+        { label: 'About', href: '/en/about/' },
+      ];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href={lang === 'ko' ? '/ko/' : '/en/'} class="brand">
+      <span class="brand-badge">IT365</span>
+      <span class="brand-text">{lang === 'ko' ? '테크 & AI 미디어' : 'Tech & AI Media'}</span>
+    </a>
+
+    <nav class="main-nav" aria-label={lang === 'ko' ? '주요 메뉴' : 'Main Navigation'}>
+      {navItems.map((item) => (
+        <a href={item.href} class="nav-link">
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header-actions">
+      <div class="lang-switcher" role="group" aria-label="Language switcher">
+        <a
+          href={koSwitchUrl}
+          class:list={['lang-btn', { active: lang === 'ko' }]}
+          title="한국어 페이지로 이동"
+        >
+          🇰🇷 한국어
+        </a>
+        <a
+          href={enSwitchUrl}
+          class:list={['lang-btn', { active: lang === 'en' }]}
+          title="Switch to English"
+        >
+          🇺🇸 EN
+        </a>
+      </div>
+      <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">
+        🌓
+      </button>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  const themeBtn = document.getElementById('theme-toggle');
+  const savedTheme = localStorage.getItem('it365-theme');
+  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+  themeBtn?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('it365-theme', next);
+  });
+</script>

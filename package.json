@@ -1,0 +1,19 @@
+{
+  "name": "it365-blog",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IT365.kr - Multilingual (KO/EN) AI & IT Tech Media Blog",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.7",
+    "@astrojs/sitemap": "^3.1.6",
+    "astro": "^4.15.0"
+  }
+}

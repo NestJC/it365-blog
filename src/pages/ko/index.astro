@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const allKoPosts = (await getCollection('blog', ({ data }) => data.lang === 'ko' && !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+function getCleanSlug(entrySlug: string) {
+  return entrySlug.replace(/^ko\//, '');
+}
+
+const aiPosts = allKoPosts.filter((p) => p.data.category === 'ai-issue');
+const bigtechPosts = allKoPosts.filter((p) => p.data.category === 'bigtech-weekly');
+const handsonPosts = allKoPosts.filter((p) => p.data.category === 'hands-on');
+---
+
+<BaseLayout
+  title="IT365.kr 한국어판 — 글로벌 AI 핫이슈 & 빅테크 신제품 심층 분석"
+  description="오픈AI, 구글, 앤트로픽 등 매일 업데이트되는 글로벌 AI 이슈와 삼성·애플 신제품 스펙 비교 및 실전 활용기를 확인하세요."
+  lang="ko"
+  canonicalUrl="https://it365.kr/ko/"
+  koAlternateUrl="https://it365.kr/ko/"
+  enAlternateUrl="https://it365.kr/en/"
+  koSwitchUrl="/ko/"
+  enSwitchUrl="/en/"
+>
+  <section class="hero-banner">
+    <h1>🇰🇷 IT365.kr — 글로벌 AI & 테크 인사이트</h1>
+    <p>매일 아침 글로벌 AI 핵심 이슈를 기업별로 심층 분석하고, 매주 빅테크 신제품 스펙과 실전 활용기를 전달합니다.</p>
+  </section>
+
+  <section id="ai-issue">
+    <div class="section-header">
+      <h2>🔥 오늘의 글로벌 AI 이슈 (기업별 심층 분석)</h2>
+    </div>
+    <div class="post-grid">
+      {aiPosts.map((post) => (
+        <article class="post-card">
+          <div>
+            <div class="post-meta">
+              <span class="badge-company">{post.data.company}</span>
+              <span>•</span>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('ko-KR')}
+              </time>
+            </div>
+            <h3>
+              <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+            </h3>
+            <p>{post.data.description}</p>
+          </div>
+          <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>상세 스펙 및 분석 읽기 →</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {bigtechPosts.length > 0 && (
+    <section id="bigtech-weekly">
+      <div class="section-header">
+        <h2>📱 빅테크 신제품 출시 예정 & 루머 총정리</h2>
+      </div>
+      <div class="post-grid">
+        {bigtechPosts.map((post) => (
+          <article class="post-card">
+            <div>
+              <div class="post-meta">
+                <span class="badge-company">{post.data.company}</span>
+                <span>•</span>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('ko-KR')}
+                </time>
+              </div>
+              <h3>
+                <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+              </h3>
+              <p>{post.data.description}</p>
+            </div>
+            <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>총정리 리포트 보기 →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {handsonPosts.length > 0 && (
+    <section id="hands-on">
+      <div class="section-header">
+        <h2>🛠️ AI 실전 활용기 & 디바이스 리뷰</h2>
+      </div>
+      <div class="post-grid">
+        {handsonPosts.map((post) => (
+          <article class="post-card">
+            <div>
+              <div class="post-meta">
+                <span class="badge-company">{post.data.company}</span>
+                <span>•</span>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('ko-KR')}
+                </time>
+              </div>
+              <h3>
+                <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>{post.data.title}</a>
+              </h3>
+              <p>{post.data.description}</p>
+            </div>
+            <a href={`/ko/blog/${getCleanSlug(post.slug)}/`}>실전 가이드 보기 →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

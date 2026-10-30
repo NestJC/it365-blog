@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>IT365.kr English — Global AI Benchmarks, Pricing & Big Tech Analysis</title>
+  <meta name="description" content="In-depth daily analysis of frontier AI models (OpenAI, Google, Anthropic), API pricing comparisons, and upcoming Big Tech hardware releases." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://it365.kr/en/" />
+  <link rel="alternate" hreflang="ko" href="https://it365.kr/ko/" />
+  <link rel="alternate" hreflang="en" href="https://it365.kr/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://it365.kr/en/" />
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — Global AI & Tech Insights" href="https://it365.kr/en/rss.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IT365.kr — Global AI & Tech Insights" />
+  <meta property="og:title" content="IT365.kr English — Global AI Benchmarks, Pricing & Big Tech Analysis" />
+  <meta property="og:description" content="In-depth daily analysis of frontier AI models (OpenAI, Google, Anthropic), API pricing comparisons, and upcoming Big Tech hardware releases." />
+  <meta property="og:url" content="https://it365.kr/en/" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","headline":"IT365.kr English — Global AI Benchmarks, Pricing & Big Tech Analysis","name":"IT365.kr — Global AI & Tech Insights","description":"In-depth daily analysis of frontier AI models (OpenAI, Google, Anthropic), API pricing comparisons, and upcoming Big Tech hardware releases.","inLanguage":"en-US","url":"https://it365.kr/en/"}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/en/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">Tech & AI Media</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/en/" class="nav-link">Home</a>
+               <a href="/en/#ai-issue" class="nav-link">Daily AI News</a>
+               <a href="/en/#bigtech-weekly" class="nav-link">Big Tech & Rumors</a>
+               <a href="/en/about/" class="nav-link">About</a>
+               <a href="/en/contact/" class="nav-link">Feedback</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/" class="lang-btn ">🇰🇷 한국어</a>
+          <a href="/en/" class="lang-btn active">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section class="hero-banner">
+    <h1>🇺🇸 IT365.kr — Global AI & Tech Insights</h1>
+    <p>Data-driven analysis of frontier AI models, side-by-side spec comparisons, and weekly Big Tech hardware roundups.</p>
+  </section>
+  <section id="ai-issue">
+    <div class="section-header">
+      <h2>🔥 Daily AI Model & Industry Analysis</h2>
+    </div>
+    <div class="post-grid"><article class="post-card">
+        <div>
+          <div class="post-meta">
+            <span class="badge-company">Google / OpenAI</span>
+            <span>•</span>
+            <time>2026-10-30</time>
+          </div>
+          <h3><a href="/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/">Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks</a></h3>
+          <p>A data-driven comparison of Google DeepMind's Gemini 4 Argon and OpenAI's GPT-6.1 Sol across context windows, Long Decode output limits, API caching costs, and real-world writing performance.</p>
+        </div>
+        <a href="/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/">Read Full Analysis →</a>
+      </article></div>
+  </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>Bilingual tech media covering global AI model benchmarks, Big Tech hardware analysis, and hands-on guides.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/en/about/">About Us</a>
+               <a href="/en/privacy/">Privacy Policy</a>
+               <a href="/en/contact/">Feedback & Contact</a>
+               <a href="/en/rss.xml">RSS Feed</a>
+               <a href="/ko/">한국어판 (Korean)</a>
+      </div>
+      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+    });
+    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const label = btn.querySelector('[data-share-label]');
+        const orig = label?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (label) {
+            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+            setTimeout(() => { label.textContent = orig; }, 2000);
+          }
+        } catch {}
+      });
+    });
+  </script>
+</body>
+</html>
