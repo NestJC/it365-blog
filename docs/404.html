@@ -80,7 +80,10 @@
       </div>
       <div class="footer-copy" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
         <span>© 2026 IT365.kr. All rights reserved.</span>
-        <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <a href="/admin/" id="editor-admin-link" style="display:none; font-size:0.8rem; font-weight:600; color:#2563eb; text-decoration:none; background:#eff6ff; padding:0.25rem 0.65rem; border-radius:999px;">📊 관리자 페이지 (/admin/)</a>
+          <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+        </div>
       </div>
     </div>
   </footer>
@@ -114,10 +117,14 @@
     function applyEditorState() {
       const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
       const authBtn = document.getElementById('editor-auth-btn');
+      const adminLink = document.getElementById('editor-admin-link');
       if (authBtn) {
-        authBtn.textContent = isEditor ? '🔓 에디터 모드 (비공개 글 표시 중 · 클릭 시 로그아웃)' : '🔒 관리자';
+        authBtn.textContent = isEditor ? '🔓 에디터 모드 (로그아웃)' : '🔒 관리자';
         authBtn.style.color = isEditor ? '#2563eb' : 'var(--text-muted)';
         authBtn.style.fontWeight = isEditor ? '600' : '400';
+      }
+      if (adminLink) {
+        adminLink.style.display = isEditor ? 'inline-flex' : 'none';
       }
 
       // 1. Homepage private draft cards

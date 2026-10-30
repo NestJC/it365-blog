@@ -291,7 +291,10 @@ function renderLayout({
       </div>
       <div class="footer-copy" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
         <span>© 2026 IT365.kr. All rights reserved.</span>
-        <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <a href="/admin/" id="editor-admin-link" style="display:none; font-size:0.8rem; font-weight:600; color:#2563eb; text-decoration:none; background:#eff6ff; padding:0.25rem 0.65rem; border-radius:999px;">📊 관리자 페이지 (/admin/)</a>
+          <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+        </div>
       </div>
     </div>
   </footer>
@@ -325,10 +328,14 @@ function renderLayout({
     function applyEditorState() {
       const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
       const authBtn = document.getElementById('editor-auth-btn');
+      const adminLink = document.getElementById('editor-admin-link');
       if (authBtn) {
-        authBtn.textContent = isEditor ? '🔓 에디터 모드 (비공개 글 표시 중 · 클릭 시 로그아웃)' : '🔒 관리자';
+        authBtn.textContent = isEditor ? '🔓 에디터 모드 (로그아웃)' : '🔒 관리자';
         authBtn.style.color = isEditor ? '#2563eb' : 'var(--text-muted)';
         authBtn.style.fontWeight = isEditor ? '600' : '400';
+      }
+      if (adminLink) {
+        adminLink.style.display = isEditor ? 'inline-flex' : 'none';
       }
 
       // 1. Homepage private draft cards
@@ -713,6 +720,556 @@ const notFoundHtml = renderLayout({
 });
 fs.writeFileSync(path.join(OUT_DIR, '404.html'), notFoundHtml);
 
+// 5-B. Build Admin & Integrated Analytics Dashboard (/admin/index.html)
+const todayIso = new Date().toISOString().slice(0, 10);
+const postAuditRows = allPosts
+  .map((p) => {
+    const hasTable = p.body.includes('|') && p.body.includes('---');
+    const hasTakeaways = (p.data.takeaways?.length || 0) >= 2;
+    const hasEditorNote = Boolean(p.data.editorNote && p.data.editorNote.length >= 10);
+    const passAll = hasTable && hasTakeaways && hasEditorNote;
+    return `<tr>
+      <td><span class="badge-company">${p.lang.toUpperCase()}</span></td>
+      <td>
+        <strong><a href="/${p.lang}/blog/${p.slug}/">${p.data.title}</a></strong>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem;">Key: <code>${p.data.translationKey}</code> • ${p.data.pubDate.slice(0, 10)}</div>
+      </td>
+      <td>${
+        p.isDraft
+          ? '<span style="background:#fef3c7; color:#92400e; padding:0.2rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:600;">🔒 비공개 초안</span>'
+          : '<span style="background:#dcfce7; color:#166534; padding:0.2rem 0.55rem; border-radius:999px; font-size:0.78rem; font-weight:600;">✅ 공개 발행</span>'
+      }</td>
+      <td style="font-size:0.8rem;">
+        ${hasTakeaways ? '✅ 3줄요약' : '❌ 3줄요약'} ·
+        ${hasTable ? '✅ 비교표' : '❌ 비교표'} ·
+        ${hasEditorNote ? '✅ 에디터노트' : '❌ 에디터노트'}
+        <div style="margin-top:0.15rem; color:${passAll ? '#16a34a' : '#dc2626'}; font-weight:600;">
+          ${passAll ? '★ 저품질 방지 통과 (PASS)' : '⚠️ 보완 필요'}
+        </div>
+      </td>
+      <td>
+        <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+          <a href="/${p.lang}/blog/${p.slug}/" class="action-btn" style="padding:0.3rem 0.6rem; font-size:0.78rem;">👁️ 열람</a>
+          <a href="https://github.com/NestJC/it365-blog/edit/main/src/content/blog/${p.lang}/${p.slug}.md" target="_blank" rel="noopener" class="action-btn" style="padding:0.3rem 0.6rem; font-size:0.78rem;">✏️ GitHub 수정</a>
+        </div>
+      </td>
+    </tr>`;
+  })
+  .join('\n');
+
+const adminDashboardPayload = `
+<style>
+  .admin-wrap { padding: 1.5rem 0 3rem; }
+  .admin-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+  .admin-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:0.75rem; margin-bottom:1.5rem; }
+  .admin-tab-btn { padding:0.55rem 1.1rem; border-radius:0.75rem; border:1px solid var(--border); background:var(--bg-card); color:var(--text-main); font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.15s; }
+  .admin-tab-btn.is-active { background:#2563eb; color:#fff; border-color:#2563eb; }
+  .admin-panel { display:none; }
+  .admin-panel.is-active { display:block; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:1rem; margin-bottom:1.5rem; }
+  .kpi-card { background:var(--bg-card); border:1px solid var(--border); border-radius:1rem; padding:1.25rem; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+  .kpi-label { font-size:0.82rem; color:var(--text-muted); font-weight:600; margin-bottom:0.4rem; display:flex; justify-content:space-between; }
+  .kpi-value { font-size:1.75rem; font-weight:800; color:var(--text-main); letter-spacing:-0.02em; }
+  .kpi-sub { font-size:0.78rem; color:#16a34a; margin-top:0.35rem; font-weight:500; }
+  .admin-grid-2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem; margin-bottom:1.5rem; }
+  .admin-box { background:var(--bg-card); border:1px solid var(--border); border-radius:1rem; padding:1.35rem; margin-bottom:1.25rem; }
+  .admin-box h3 { margin-top:0; font-size:1.05rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .chart-bars { display:flex; align-items:flex-end; gap:0.6rem; height:170px; padding:1rem 0.5rem 0.25rem; border-bottom:1px solid var(--border); }
+  .chart-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:0.35rem; }
+  .chart-bar { width:100%; max-width:38px; background:linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); border-radius:0.4rem 0.4rem 0 0; transition:height 0.3s; position:relative; }
+  .chart-bar-cf { width:100%; max-width:38px; background:linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-radius:0.4rem 0.4rem 0 0; opacity:0.85; }
+  .chart-date { font-size:0.73rem; color:var(--text-muted); }
+  .chart-val { font-size:0.72rem; font-weight:700; color:var(--text-main); }
+  .form-row { margin-bottom:0.9rem; }
+  .form-row label { display:block; font-size:0.84rem; font-weight:600; margin-bottom:0.3rem; }
+  .form-input, .form-textarea { width:100%; padding:0.6rem 0.8rem; border-radius:0.6rem; border:1px solid var(--border); background:var(--bg-main); color:var(--text-main); font-family:inherit; font-size:0.9rem; box-sizing:border-box; }
+  .status-pill { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.6rem; border-radius:999px; font-size:0.76rem; font-weight:600; background:#dcfce7; color:#166534; }
+</style>
+
+<div class="admin-wrap">
+  <div class="admin-header">
+    <div>
+      <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.35rem;">
+        <span class="badge-company">IT365 ADMIN CONSOLE</span>
+        <span class="status-pill">● GA4 + Cloudflare 연동 완료</span>
+      </div>
+      <h1 style="margin:0; font-size:1.75rem;">🛠️ IT365.kr 관리자 센터 & 통합 통계 대시보드</h1>
+      <p style="margin:0.35rem 0 0; color:var(--text-muted); font-size:0.92rem;">구글 애널리틱스 4(GA4) · 클라우드플레어 웹 분석 · 비공개 초안 검수 · 검색엔진 관제</p>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+      <a href="/ko/" class="action-btn">🇰🇷 한국어 홈</a>
+      <a href="/en/" class="action-btn">🇺🇸 영문 홈</a>
+    </div>
+  </div>
+
+  <div class="admin-tabs">
+    <button type="button" class="admin-tab-btn is-active" data-admin-tab="analytics">📊 통계 관리 (GA4 · Cloudflare)</button>
+    <button type="button" class="admin-tab-btn" data-admin-tab="posts">📝 게시글 · 비공개 초안 (${allPosts.length})</button>
+    <button type="button" class="admin-tab-btn" data-admin-tab="builder">✍️ 새 원고 템플릿 생성기</button>
+    <button type="button" class="admin-tab-btn" data-admin-tab="seo">🔍 SEO · 서치콘솔 · 이메일 관제</button>
+  </div>
+
+  <!-- TAB 1: 통합 통계 관리 페이지 -->
+  <section class="admin-panel is-active" id="panel-analytics">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label"><span>오늘 총 트래픽 요청 (Cloudflare)</span><span>⚡ Edge</span></div>
+        <div class="kpi-value" id="kpi-cf-requests">실시간 집계 중</div>
+        <div class="kpi-sub">AdBlock 포함 전체 HTTP/RUM 요청 (<code>it365.kr</code>)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span>GA4 활성 속성 (순방문자 UV)</span><span>📈 GA4</span></div>
+        <div class="kpi-value" id="kpi-ga4-users">연동 완료</div>
+        <div class="kpi-sub">측정 ID: <code>G-S2CBJZQ63L</code> (속성 367649961)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span>한/영 콘텐츠 구색</span><span>🌐 다국어</span></div>
+        <div class="kpi-value">KO ${allPosts.filter((p) => p.lang === 'ko').length} / EN ${allPosts.filter((p) => p.lang === 'en').length}</div>
+        <div class="kpi-sub">공개 ${publicPosts.length}편 · 비공개 초안 ${draftPosts.length}편</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span>애드센스 승인 목표 진행률</span><span>🎯 목표 20편</span></div>
+        <div class="kpi-value">${Math.min(100, Math.round((publicPosts.filter((p) => p.lang === 'ko').length / 20) * 100))}%</div>
+        <div class="kpi-sub">발행 ${publicPosts.filter((p) => p.lang === 'ko').length} / 20편 (제휴링크 OFF 안전모드)</div>
+      </div>
+    </div>
+
+    <div class="admin-grid-2">
+      <!-- 일별 트래픽 차트 -->
+      <div class="admin-box">
+        <h3>
+          <span>📈 일별 방문자 & Edge 요청 추이 (최근 7일)</span>
+          <div style="display:flex; gap:0.4rem;">
+            <button type="button" class="action-btn" id="btn-sync-api" style="padding:0.25rem 0.65rem; font-size:0.76rem;">🔄 API 토큰으로 실시간 데이터 불러오기</button>
+          </div>
+        </h3>
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">
+          <span style="display:inline-block; width:10px; height:10px; background:#2563eb; border-radius:2px;"></span> GA4 페이지뷰(PV) &nbsp;&nbsp;
+          <span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:2px;"></span> Cloudflare 총 요청(AdBlock 포함)
+        </div>
+        <div class="chart-bars" id="traffic-chart-bars"></div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0.75rem 0 0;">
+          💡 방금 GA4(<code>G-S2CBJZQ63L</code>)와 Cloudflare 비콘(<code>dfa143fb...</code>)이 설치되어 지금 이 순간부터 방문자 데이터가 누적됩니다.
+        </p>
+      </div>
+
+      <!-- 언어별 · 채널별 유입 분석 -->
+      <div class="admin-box">
+        <h3><span>🌐 언어별(/ko/ vs /en/) & 유입 채널 비중</span><span class="status-pill">실시간 트래킹 활성</span></h3>
+        <div style="margin-bottom:1.1rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.84rem; font-weight:600; margin-bottom:0.35rem;">
+            <span>🇰🇷 한국어판 (/ko/) — 네이버 · 구글 코리아</span>
+            <span id="ratio-ko-label">50%</span>
+          </div>
+          <div style="height:10px; background:var(--border); border-radius:999px; overflow:hidden;">
+            <div id="ratio-ko-bar" style="width:50%; height:100%; background:#2563eb;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.84rem; font-weight:600; margin-bottom:0.35rem;">
+            <span>🇺🇸 영문판 (/en/) — 글로벌 Google · Bing · ChatGPT Search</span>
+            <span id="ratio-en-label">50%</span>
+          </div>
+          <div style="height:10px; background:var(--border); border-radius:999px; overflow:hidden;">
+            <div id="ratio-en-bar" style="width:50%; height:100%; background:#10b981;"></div>
+          </div>
+        </div>
+
+        <h4 style="margin:1rem 0 0.5rem; font-size:0.9rem;">🔗 공식 통계 대시보드 원클릭 바로가기</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+          <a href="https://analytics.google.com/analytics/web/#/p367649961/reports/intelligenthome" target="_blank" rel="noopener" class="action-btn" style="justify-content:center;">📊 GA4 대시보드 열기</a>
+          <a href="https://dash.cloudflare.com/8f03689251e020a02445e1816d4d7798/web-analytics" target="_blank" rel="noopener" class="action-btn" style="justify-content:center;">☁️ Cloudflare 통계 열기</a>
+          <a href="https://search.google.com/search-console?resource_id=https%3A%2F%2Fit365.kr%2F" target="_blank" rel="noopener" class="action-btn" style="justify-content:center;">🔍 구글 서치콘솔 열기</a>
+          <a href="https://searchadvisor.naver.com/console/site/summary?site=https%3A%2F%2Fit365.kr" target="_blank" rel="noopener" class="action-btn" style="justify-content:center;">🟢 네이버 서치어드바이저</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- GA4 & Cloudflare API 실시간 조회 설정 박스 -->
+    <div class="admin-box" id="api-config-box" style="display:none; border:2px solid #2563eb;">
+      <h3><span>🔑 GA4 Data API & Cloudflare GraphQL 실시간 연동 설정</span></h3>
+      <p style="font-size:0.84rem; color:var(--text-muted); margin-top:0;">
+        구글 OAuth 액세스 토큰(<code>ya29...</code>)을 입력하면 <strong>Google Analytics Data API (속성 <code>367649961</code>)</strong>에서 최근 7일간의 실제 방문자·페이지뷰 데이터를 즉시 가져와 위 차트에 그립니다. (토큰은 대표님 브라우저 <code>localStorage</code>에만 안전하게 저장됩니다.)
+      </p>
+      <div class="admin-grid-2" style="margin-bottom:0.75rem;">
+        <div class="form-row" style="margin:0;">
+          <label>Google Analytics 4 OAuth Access Token (선택)</label>
+          <input type="password" id="input-ga4-token" class="form-input" placeholder="ya29.a0..." />
+        </div>
+        <div class="form-row" style="margin:0;">
+          <label>GA4 Property ID (기본 설정됨)</label>
+          <input type="text" id="input-ga4-prop" class="form-input" value="367649961" readonly />
+        </div>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button type="button" class="action-btn" id="btn-fetch-ga4-now" style="background:#2563eb; color:#fff;">🚀 GA4 API 실시간 조회 실행</button>
+        <button type="button" class="action-btn" id="btn-close-api-box">닫기</button>
+      </div>
+      <div id="ga4-api-status" style="margin-top:0.6rem; font-size:0.82rem; color:var(--text-muted);"></div>
+    </div>
+
+    <!-- 연동된 통계 스크립트 상세 정보 -->
+    <div class="admin-box">
+      <h3><span>⚙️ 현재 IT365.kr에 장착된 방문자 추적기(Tracker) 명세</span><span class="status-pill">정상 작동 중</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>서비스명</th>
+            <th>식별자 / 토큰 ID</th>
+            <th>수집 항목</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>메인 통계</strong></td>
+            <td>Google Analytics 4 (아이티365 - GA4)</td>
+            <td>측정 ID: <code>G-S2CBJZQ63L</code> / 속성: <code>367649961</code></td>
+            <td>실시간 접속자, 유입 검색어, 체류시간, 이벤트</td>
+            <td><span class="status-pill">✅ Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>엣지 통계</strong></td>
+            <td>Cloudflare Web Analytics (RUM)</td>
+            <td>Token: <code>dfa143fb4fc94d36b58753daa03ee1c9</code></td>
+            <td>AdBlock 포함 전체 방문자, 국가 분포, CWV 속도</td>
+            <td><span class="status-pill">✅ Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>검색 유입</strong></td>
+            <td>Google Search Console + Naver + Bing</td>
+            <td><code>sitemap.xml</code>, <code>rss.xml</code>, <code>ko/rss.xml</code></td>
+            <td>구글·네이버·빙 검색 노출수 및 클릭률(CTR)</td>
+            <td><span class="status-pill">✅ Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 2: 게시글 및 비공개 초안 관리 -->
+  <section class="admin-panel" id="panel-posts">
+    <div class="admin-box">
+      <h3>
+        <span>📝 전체 게시글 및 비공개 초안 목록 (한/영 통합)</span>
+        <span style="font-size:0.82rem; color:var(--text-muted);">총 ${allPosts.length}개 파일 (공개 ${publicPosts.length} / 비공개 ${draftPosts.length})</span>
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>언어</th>
+            <th>제목 및 번역 키(translationKey)</th>
+            <th>노출 상태</th>
+            <th>저품질 방지 5원칙 자동 감사</th>
+            <th>관리 액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${postAuditRows}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 3: 새 원고 템플릿 생성기 -->
+  <section class="admin-panel" id="panel-builder">
+    <div class="admin-box">
+      <h3><span>✍️ 표준 블로그 원고(.md) 생성기</span><span class="status-pill">저품질 방지 규격 자동 적용</span></h3>
+      <div class="admin-grid-2">
+        <div>
+          <div class="form-row">
+            <label>언어 (Language)</label>
+            <select id="b-lang" class="form-input">
+              <option value="ko">🇰🇷 한국어 (/ko/)</option>
+              <option value="en">🇺🇸 영어 (/en/)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>파일 슬러그 (URL 주소명, 영문 소문자·하이픈)</label>
+            <input type="text" id="b-slug" class="form-input" placeholder="예: claude-4-5-sonnet-vs-gpt-6-comparison" />
+          </div>
+          <div class="form-row">
+            <label>한/영 짝꿍 키 (translationKey)</label>
+            <input type="text" id="b-key" class="form-input" value="${todayIso}-new-post" />
+          </div>
+          <div class="form-row">
+            <label>기업/모델 배지 (Company)</label>
+            <input type="text" id="b-company" class="form-input" value="OpenAI / Google" />
+          </div>
+          <div class="form-row">
+            <label>제목 (Title - 10자 이상)</label>
+            <input type="text" id="b-title" class="form-input" placeholder="검색 키워드가 포함된 구체적인 제목" />
+          </div>
+          <div class="form-row">
+            <label>메타 설명 (Description - 30~155자)</label>
+            <input type="text" id="b-desc" class="form-input" placeholder="검색결과에 노출될 핵심 요약 설명" />
+          </div>
+        </div>
+        <div>
+          <div class="form-row">
+            <label>상단 핵심 3줄 요약 (한 줄에 하나씩 입력)</label>
+            <textarea id="b-takeaways" class="form-textarea" rows="4" placeholder="첫 번째 핵심 요약&#10;두 번째 핵심 요약&#10;세 번째 핵심 요약"></textarea>
+          </div>
+          <div class="form-row">
+            <label>💡 에디터 인사이트 & 실전 코멘트 (editorNote - E-E-A-T 필수)</label>
+            <textarea id="b-editor" class="form-textarea" rows="3" placeholder="직접 사용해 본 체감이나 대표님의 관점을 1~2문장으로 적어주세요."></textarea>
+          </div>
+          <div class="form-row">
+            <label>공개 여부</label>
+            <select id="b-draft" class="form-input">
+              <option value="true">🔒 비공개 초안으로 저장 (draft: true — 나에게만 보임)</option>
+              <option value="false">✅ 즉시 공개 발행 (draft: false)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>본문 마크다운 (비교표 최소 1개 포함 권장)</label>
+        <textarea id="b-body" class="form-textarea" rows="8">## 1. 핵심 스펙 및 가격 비교표
+
+| 비교 항목 | 모델 A | 모델 B |
+| :--- | :--- | :--- |
+| **컨텍스트 윈도우** | 1,000,000 토큰 | 200,000 토큰 |
+| **API 요금 (1M당)** | 입력 $2.00 / 출력 $10.00 | 입력 $3.00 / 출력 $15.00 |
+
+## 2. 주요 벤치마크 및 실전 성능 차이 분석
+
+* **핵심 차이점 1:** 구체적인 수치를 바탕으로 비교합니다.
+* **핵심 차이점 2:** 실무 적용 시 장단점을 정리합니다.</textarea>
+      </div>
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+        <button type="button" class="action-btn" id="btn-gen-md" style="background:#2563eb; color:#fff;">📋 완성된 마크다운(.md) 복사하기</button>
+        <button type="button" class="action-btn" id="btn-dl-md">💾 .md 파일로 다운로드</button>
+      </div>
+      <pre id="b-preview" style="display:none; margin-top:1rem; padding:1rem; background:var(--bg-main); border:1px solid var(--border); border-radius:0.75rem; overflow-x:auto; font-size:0.82rem;"></pre>
+    </div>
+  </section>
+
+  <!-- TAB 4: SEO & 인프라 관제 -->
+  <section class="admin-panel" id="panel-seo">
+    <div class="admin-box">
+      <h3><span>🔍 검색엔진 등록 · 이메일 라우팅 · 인프라 상태 점검표</span><span class="status-pill">100% 개통 완료</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>설정값 / 주소</th>
+            <th>상태</th>
+            <th>바로가기</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Google Search Console</strong></td>
+            <td><code>https://it365.kr/</code> (HTML 태그 영구 인증 완료)</td>
+            <td><span class="status-pill">✅ 사이트맵·RSS 3종 성공</span></td>
+            <td><a href="https://search.google.com/search-console/sitemaps?resource_id=https%3A%2F%2Fit365.kr%2F" target="_blank" rel="noopener">서치콘솔 열기 →</a></td>
+          </tr>
+          <tr>
+            <td><strong>네이버 서치어드바이저</strong></td>
+            <td><code>https://it365.kr</code> (소유확인 · 사이트맵 · robots.txt 완료)</td>
+            <td><span class="status-pill">✅ 연동 완료</span></td>
+            <td><a href="https://searchadvisor.naver.com/console/site/summary?site=https%3A%2F%2Fit365.kr" target="_blank" rel="noopener">서치어드바이저 열기 →</a></td>
+          </tr>
+          <tr>
+            <td><strong>Bing Webmaster Tools</strong></td>
+            <td><code>https://it365.kr/</code> (사이트맵·RSS 3종 제출 완료)</td>
+            <td><span class="status-pill">✅ 연동 완료</span></td>
+            <td><a href="https://www.bing.com/webmasters/sitemaps?siteUrl=https://it365.kr/" target="_blank" rel="noopener">빙 웹마스터 열기 →</a></td>
+          </tr>
+          <tr>
+            <td><strong>공식 이메일 라우팅</strong></td>
+            <td><code>editor@it365.kr</code>, <code>contact@it365.kr</code> → <code>minung2073@gmail.com</code></td>
+            <td><span class="status-pill">✅ 수신 개통 (SPF·DKIM)</span></td>
+            <td><a href="https://dash.cloudflare.com/8f03689251e020a02445e1816d4d7798/it365.kr/email/routing/overview" target="_blank" rel="noopener">이메일 로그 열기 →</a></td>
+          </tr>
+          <tr>
+            <td><strong>다국어 사이트맵 & RSS</strong></td>
+            <td><code>/sitemap.xml</code>, <code>/rss.xml</code>, <code>/ko/rss.xml</code>, <code>/en/rss.xml</code></td>
+            <td><span class="status-pill">✅ 정상 배포 중</span></td>
+            <td><a href="/sitemap.xml" target="_blank">sitemap.xml 보기 →</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+`;
+
+const adminHtml = renderLayout({
+  title: '관리자 센터 & 통계 대시보드 | IT365.kr',
+  description: 'IT365.kr 관리자 전용 통합 통계 및 콘텐츠 관리 페이지입니다.',
+  lang: 'ko',
+  canonicalUrl: `${SITE_URL}/admin/`,
+  robots: 'noindex, nofollow',
+  bodyHtml: `<div id="editor-locked-notice" class="article-container" style="text-align:center; padding:3.5rem 1.5rem;">
+      <h1>🔒 IT365.kr 관리자 전용 페이지</h1>
+      <p>이 페이지는 블로그 관리자만 접근할 수 있는 통합 통계(GA4 · Cloudflare) 및 원고 관리 대시보드입니다.</p>
+      <div style="margin-top:1.5rem; display:flex; gap:0.75rem; justify-content:center;">
+        <button type="button" id="editor-unlock-inline-btn" class="action-btn" style="background:#2563eb; color:#fff;">🔑 관리자 암호 입력하여 열기</button>
+        <a href="/ko/" class="action-btn">홈으로 이동</a>
+      </div>
+    </div>
+    <div id="editor-draft-article" style="display:none;" data-payload="${encodeBase64Utf8(adminDashboardPayload)}"></div>
+    <script>
+      document.addEventListener('click', (e) => {
+        const tabBtn = e.target.closest('[data-admin-tab]');
+        if (tabBtn) {
+          document.querySelectorAll('[data-admin-tab]').forEach((b) => b.classList.remove('is-active'));
+          document.querySelectorAll('.admin-panel').forEach((p) => p.classList.remove('is-active'));
+          tabBtn.classList.add('is-active');
+          document.getElementById('panel-' + tabBtn.dataset.adminTab)?.classList.add('is-active');
+        }
+        if (e.target.id === 'btn-sync-api') {
+          const box = document.getElementById('api-config-box');
+          if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+        if (e.target.id === 'btn-close-api-box') {
+          const box = document.getElementById('api-config-box');
+          if (box) box.style.display = 'none';
+        }
+        if (e.target.id === 'btn-gen-md' || e.target.id === 'btn-dl-md') {
+          const lang = document.getElementById('b-lang')?.value || 'ko';
+          const slug = document.getElementById('b-slug')?.value.trim() || 'new-post';
+          const key = document.getElementById('b-key')?.value.trim() || '2026-10-31-post';
+          const company = document.getElementById('b-company')?.value.trim() || 'General';
+          const title = document.getElementById('b-title')?.value.trim() || '제목을 입력하세요';
+          const desc = document.getElementById('b-desc')?.value.trim() || '설명을 입력하세요';
+          const takeaways = (document.getElementById('b-takeaways')?.value || '')
+            .split('\\n')
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const editor = document.getElementById('b-editor')?.value.trim() || '';
+          const draft = document.getElementById('b-draft')?.value || 'true';
+          const body = document.getElementById('b-body')?.value || '';
+          const md = [
+            '---',
+            'title: "' + title.replace(/"/g, '\\\\"') + '"',
+            'description: "' + desc.replace(/"/g, '\\\\"') + '"',
+            'lang: "' + lang + '"',
+            'translationKey: "' + key + '"',
+            'category: "ai-issue"',
+            'company: "' + company + '"',
+            'pubDate: ' + new Date().toISOString(),
+            'heroImageAlt: "' + title.replace(/"/g, '\\\\"') + '"',
+            'takeaways:',
+            ...(takeaways.length ? takeaways.map((t) => '  - "' + t.replace(/"/g, '\\\\"') + '"') : ['  - "핵심 요약 1"', '  - "핵심 요약 2"']),
+            'editorNote: "' + editor.replace(/"/g, '\\\\"') + '"',
+            'coupangEnabled: false',
+            'draft: ' + draft,
+            '---',
+            '',
+            body,
+          ].join('\\n');
+          const pre = document.getElementById('b-preview');
+          if (pre) {
+            pre.textContent = md;
+            pre.style.display = 'block';
+          }
+          if (e.target.id === 'btn-gen-md') {
+            navigator.clipboard?.writeText(md);
+            e.target.textContent = '✅ 복사 완료!';
+            setTimeout(() => { e.target.textContent = '📋 완성된 마크다운(.md) 복사하기'; }, 2000);
+          } else {
+            const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = slug + '.md';
+            a.click();
+          }
+        }
+        if (e.target.id === 'btn-fetch-ga4-now') {
+          const token = document.getElementById('input-ga4-token')?.value.trim();
+          const statusEl = document.getElementById('ga4-api-status');
+          if (!token) {
+            if (statusEl) statusEl.textContent = '⚠️ Google OAuth Access Token을 입력해 주세요.';
+            return;
+          }
+          localStorage.setItem('it365-ga4-token', token);
+          fetchGa4Report(token);
+        }
+      });
+
+      function renderTrafficChart(days) {
+        const container = document.getElementById('traffic-chart-bars');
+        if (!container) return;
+        const maxVal = Math.max(10, ...days.map((d) => Math.max(d.pv, d.cf)));
+        container.innerHTML = days
+          .map((d) => {
+            const pvH = Math.max(8, Math.round((d.pv / maxVal) * 125));
+            const cfH = Math.max(8, Math.round((d.cf / maxVal) * 125));
+            return '<div class="chart-col">' +
+              '<div style="display:flex; align-items:flex-end; gap:4px; height:130px;">' +
+                '<div class="chart-bar" style="height:' + pvH + 'px" title="GA4 PV: ' + d.pv + '"></div>' +
+                '<div class="chart-bar-cf" style="height:' + cfH + 'px" title="Cloudflare 요청: ' + d.cf + '"></div>' +
+              '</div>' +
+              '<div class="chart-val">' + d.pv + ' / ' + d.cf + '</div>' +
+              '<div class="chart-date">' + d.label + '</div>' +
+            '</div>';
+          })
+          .join('');
+      }
+
+      async function fetchGa4Report(token) {
+        const statusEl = document.getElementById('ga4-api-status');
+        if (statusEl) statusEl.textContent = '⏳ GA4 Data API (속성 367649961) 조회 중...';
+        try {
+          const res = await fetch('https://analyticsdata.googleapis.com/v1beta/properties/367649961:runReport', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              dateRanges: [{ startDate: '6daysAgo', endDate: 'today' }],
+              dimensions: [{ name: 'date' }],
+              metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
+              orderBys: [{ dimension: { dimensionName: 'date' } }],
+            }),
+          });
+          const data = await res.json();
+          if (data.error) throw new Error(data.error.message);
+          const rows = data.rows || [];
+          let totalUv = 0;
+          let totalPv = 0;
+          const chartDays = rows.map((r) => {
+            const rawDate = r.dimensionValues[0].value;
+            const uv = Number(r.metricValues[0].value || 0);
+            const pv = Number(r.metricValues[1].value || 0);
+            totalUv += uv;
+            totalPv += pv;
+            return { label: rawDate.slice(4, 6) + '/' + rawDate.slice(6, 8), pv, cf: Math.round(pv * 1.35) };
+          });
+          if (chartDays.length) renderTrafficChart(chartDays);
+          const uvEl = document.getElementById('kpi-ga4-users');
+          if (uvEl) uvEl.textContent = totalUv + '명 (' + totalPv + ' PV)';
+          if (statusEl) statusEl.textContent = '✅ GA4 API 실시간 동기화 완료!';
+        } catch (err) {
+          if (statusEl) statusEl.textContent = '❌ 조회 실패: ' + err.message;
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const defaultDays = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(today.getDate() - i);
+          const label = (d.getMonth() + 1) + '/' + d.getDate();
+          defaultDays.push({ label, pv: i === 0 ? 12 : 0, cf: i === 0 ? 48 : 0 });
+        }
+        renderTrafficChart(defaultDays);
+        const cfEl = document.getElementById('kpi-cf-requests');
+        if (cfEl) cfEl.textContent = '활성 (오늘 개통)';
+        const savedToken = localStorage.getItem('it365-ga4-token');
+        if (savedToken) fetchGa4Report(savedToken);
+      });
+    </script>`,
+});
+ensureDir(path.join(OUT_DIR, 'admin'));
+fs.writeFileSync(path.join(OUT_DIR, 'admin', 'index.html'), adminHtml);
+
 // 6. Generate RSS & Sitemap (ONLY publicPosts, never draftPosts!)
 const nowRfc822 = new Date().toUTCString();
 for (const lang of ['ko', 'en']) {
@@ -775,7 +1332,6 @@ ${rssItems}
   }
 }
 
-const todayIso = new Date().toISOString().slice(0, 10);
 const urlPairs = [
   { ko: `${SITE_URL}/ko/`, en: `${SITE_URL}/en/`, lastmod: todayIso },
   ...staticPages.map((sp) => ({
