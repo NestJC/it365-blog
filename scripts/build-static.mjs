@@ -13,7 +13,7 @@ const EDITOR_PASS_HASHES = [
   '8426f2021a6c27e8d8084d7a035e18f5479184567b7f2b67c72c465ffef8b8c0', // it365
 ];
 
-let verifications = { google: '', naver: '', bing: '' };
+let verifications = { google: '', naver: '', bing: '', ga4: '', cfBeacon: '' };
 const verificationPath = path.join(PUBLIC_DIR, 'site-verification.json');
 if (fs.existsSync(verificationPath)) {
   try {
@@ -204,6 +204,17 @@ function renderLayout({
   ${verifications.google ? `<meta name="google-site-verification" content="${verifications.google}" />` : ''}
   ${verifications.naver ? `<meta name="naver-site-verification" content="${verifications.naver}" />` : ''}
   ${verifications.bing ? `<meta name="msvalidate.01" content="${verifications.bing}" />` : ''}
+  ${
+    verifications.ga4
+      ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${verifications.ga4}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${verifications.ga4}');
+  </script>`
+      : ''
+  }
   <link rel="canonical" href="${canonicalUrl}" />
   ${koAlternateUrl ? `<link rel="alternate" hreflang="ko" href="${koAlternateUrl}" />` : ''}
   ${enAlternateUrl ? `<link rel="alternate" hreflang="en" href="${enAlternateUrl}" />` : ''}
@@ -402,6 +413,11 @@ function renderLayout({
     bindActionButtons();
     applyEditorState();
   </script>
+  ${
+    verifications.cfBeacon
+      ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${verifications.cfBeacon}"}'></script>`
+      : ''
+  }
 </body>
 </html>`;
 }
@@ -698,30 +714,65 @@ const notFoundHtml = renderLayout({
 fs.writeFileSync(path.join(OUT_DIR, '404.html'), notFoundHtml);
 
 // 6. Generate RSS & Sitemap (ONLY publicPosts, never draftPosts!)
+const nowRfc822 = new Date().toUTCString();
 for (const lang of ['ko', 'en']) {
   const langPosts = publicPosts.filter((p) => p.lang === lang);
-  const rssItems = langPosts
+  const itemsSource =
+    langPosts.length > 0
+      ? langPosts.map((p) => ({
+          title: p.data.title,
+          link: `${SITE_URL}/${lang}/blog/${p.slug}/`,
+          description: p.data.description,
+          pubDate: new Date(p.data.pubDate).toUTCString(),
+        }))
+      : [
+          {
+            title:
+              lang === 'ko'
+                ? 'IT365.kr — 글로벌 AI & 빅테크 심층 분석 미디어 소개'
+                : 'About IT365.kr — Global AI & Big Tech Analysis Media',
+            link: `${SITE_URL}/${lang}/about/`,
+            description:
+              lang === 'ko'
+                ? '글로벌 AI 모델 벤치마크, API 가격 비교, 빅테크 하드웨어 트렌드를 데이터 기반으로 분석하는 한/영 테크 미디어입니다.'
+                : 'Bilingual technology media covering frontier AI model benchmarks, API pricing comparisons, and Big Tech hardware.',
+            pubDate: nowRfc822,
+          },
+        ];
+
+  const rssItems = itemsSource
     .map(
-      (p) => `<item>
-      <title><![CDATA[${p.data.title}]]></title>
-      <link>${SITE_URL}/${lang}/blog/${p.slug}/</link>
-      <guid>${SITE_URL}/${lang}/blog/${p.slug}/</guid>
-      <pubDate>${new Date(p.data.pubDate).toUTCString()}</pubDate>
-      <description><![CDATA[${p.data.description}]]></description>
+      (item) => `    <item>
+      <title><![CDATA[${item.title}]]></title>
+      <link>${item.link}</link>
+      <guid isPermaLink="true">${item.link}</guid>
+      <pubDate>${item.pubDate}</pubDate>
+      <description><![CDATA[${item.description}]]></description>
     </item>`
     )
     .join('\n');
+
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>IT365.kr (${lang.toUpperCase()})</title>
-    <link>${SITE_URL}/${lang}/</link>
-    <description>IT365.kr Global AI &amp; Tech Media</description>
-    <language>${lang === 'ko' ? 'ko-kr' : 'en-us'}</language>
-    ${rssItems}
+    <title>${lang === 'ko' ? 'IT365.kr — 글로벌 AI & 테크 인사이트' : 'IT365.kr — Global AI & Tech Insights'}</title>
+    <link>${SITE_URL}/${lang === 'ko' ? '' : 'en/'}</link>
+    <description>${
+      lang === 'ko'
+        ? '오픈AI, 구글, 앤트로픽 등 글로벌 AI 이슈와 빅테크 신제품 스펙 비교 분석'
+        : 'In-depth analysis of frontier AI models, API pricing, and Big Tech hardware'
+    }</description>
+    <language>${lang === 'ko' ? 'ko' : 'en'}</language>
+    <pubDate>${nowRfc822}</pubDate>
+    <lastBuildDate>${nowRfc822}</lastBuildDate>
+    <atom:link href="${SITE_URL}/${lang}/rss.xml" rel="self" type="application/rss+xml" />
+${rssItems}
   </channel>
 </rss>`;
   fs.writeFileSync(path.join(OUT_DIR, lang, 'rss.xml'), rssXml);
+  if (lang === 'ko') {
+    fs.writeFileSync(path.join(OUT_DIR, 'rss.xml'), rssXml);
+  }
 }
 
 const todayIso = new Date().toISOString().slice(0, 10);

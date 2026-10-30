@@ -95,6 +95,18 @@ const jsonLd =
 <meta name="google-site-verification" content="jlyYCbTkZRCUTyuFEjh_Hu929gkp8rgysiHGPJQyuxw" />
 <meta name="naver-site-verification" content="f2925d57d728ecc09a8d3c3b908c25c4912218aa" />
 
+<!-- Google Analytics 4 (GA4: 아이티365 - GA4) -->
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-S2CBJZQ63L"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-S2CBJZQ63L');
+</script>
+
+<!-- Cloudflare Web Analytics -->
+<script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "dfa143fb4fc94d36b58753daa03ee1c9"}'></script>
+
 <!-- Open Graph / Social -->
 <meta property="og:type" content={ogType} />
 <meta property="og:site_name" content={siteName} />
