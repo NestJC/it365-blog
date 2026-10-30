@@ -64,7 +64,10 @@
                <a href="/ko/rss.xml">RSS 피드</a>
                <a href="/en/">English Edition</a>
       </div>
-      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+      <div class="footer-copy" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span>© 2026 IT365.kr. All rights reserved.</span>
+        <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+      </div>
     </div>
   </footer>
   <script>
@@ -79,22 +82,111 @@
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('it365-theme', next);
     });
-    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
-      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
-    });
-    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const label = btn.querySelector('[data-share-label]');
-        const orig = label?.textContent || '';
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          if (label) {
-            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
-            setTimeout(() => { label.textContent = orig; }, 2000);
+
+    // Editor-only authentication & private draft rendering
+    const VALID_KEYS = ['2073', 'it365', 'minung2073'];
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('editor') && VALID_KEYS.includes(urlParams.get('editor'))) {
+      localStorage.setItem('it365-editor-auth', 'verified');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    function decodeBase64Utf8(b64) {
+      const binStr = atob(b64);
+      const bytes = Uint8Array.from(binStr, (m) => m.codePointAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function applyEditorState() {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      const authBtn = document.getElementById('editor-auth-btn');
+      if (authBtn) {
+        authBtn.textContent = isEditor ? '🔓 에디터 모드 (비공개 글 표시 중 · 클릭 시 로그아웃)' : '🔒 관리자';
+        authBtn.style.color = isEditor ? '#2563eb' : 'var(--text-muted)';
+        authBtn.style.fontWeight = isEditor ? '600' : '400';
+      }
+
+      // 1. Homepage private draft cards
+      const draftContainer = document.getElementById('editor-draft-cards');
+      const postSection = document.getElementById('ai-issue');
+      if (draftContainer) {
+        if (isEditor && draftContainer.dataset.payload) {
+          draftContainer.innerHTML = decodeBase64Utf8(draftContainer.dataset.payload);
+          draftContainer.style.display = 'contents';
+          if (postSection) postSection.style.display = 'block';
+        } else {
+          draftContainer.innerHTML = '';
+          draftContainer.style.display = 'none';
+          if (postSection && postSection.dataset.hasPublic === 'false') {
+            postSection.style.display = 'none';
           }
-        } catch {}
+        }
+      }
+
+      // 2. Private draft article page
+      const draftArticle = document.getElementById('editor-draft-article');
+      const lockedNotice = document.getElementById('editor-locked-notice');
+      if (draftArticle) {
+        if (isEditor && draftArticle.dataset.payload) {
+          draftArticle.innerHTML = decodeBase64Utf8(draftArticle.dataset.payload);
+          draftArticle.style.display = 'block';
+          if (lockedNotice) lockedNotice.style.display = 'none';
+          bindActionButtons();
+        } else {
+          draftArticle.innerHTML = '';
+          draftArticle.style.display = 'none';
+          if (lockedNotice) lockedNotice.style.display = 'block';
+        }
+      }
+    }
+
+    function bindActionButtons() {
+      document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => btn.classList.toggle('is-active'));
       });
+      document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', async () => {
+          const label = btn.querySelector('[data-share-label]');
+          const orig = label?.textContent || '';
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            if (label) {
+              label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+              setTimeout(() => { label.textContent = orig; }, 2000);
+            }
+          } catch {}
+        });
+      });
+    }
+
+    document.getElementById('editor-auth-btn')?.addEventListener('click', () => {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      if (isEditor) {
+        localStorage.removeItem('it365-editor-auth');
+        applyEditorState();
+      } else {
+        const code = window.prompt('관리자(에디터) 암호를 입력하세요:');
+        if (code && VALID_KEYS.includes(code.trim())) {
+          localStorage.setItem('it365-editor-auth', 'verified');
+          applyEditorState();
+        } else if (code !== null) {
+          window.alert('암호가 올바르지 않습니다.');
+        }
+      }
     });
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'editor-unlock-inline-btn') {
+        document.getElementById('editor-auth-btn')?.click();
+      }
+    });
+
+    bindActionButtons();
+    applyEditorState();
   </script>
 </body>
 </html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>비공개 아티클 | IT365.kr</title>
+  <meta name="description" content="관리자 전용 비공개 페이지입니다." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="google-site-verification" content="jlyYCbTkZRCUTyuFEjh_Hu929gkp8rgysiHGPJQyuxw" />
+  <meta name="naver-site-verification" content="f2925d57d728ecc09a8d3c3b908c25c4912218aa" />
+  
+  <link rel="canonical" href="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — Global AI & Tech Insights" href="https://it365.kr/en/rss.xml" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="IT365.kr — Global AI & Tech Insights" />
+  <meta property="og:title" content="비공개 아티클 | IT365.kr" />
+  <meta property="og:description" content="관리자 전용 비공개 페이지입니다." />
+  <meta property="og:url" content="https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"비공개 아티클 | IT365.kr","name":"IT365.kr — Global AI & Tech Insights","description":"관리자 전용 비공개 페이지입니다.","inLanguage":"en-US","datePublished":"2026-10-30T21:00:00+09:00","url":"https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/","publisher":{"@type":"Organization","name":"IT365.kr","url":"https://it365.kr","contactPoint":[{"@type":"ContactPoint","email":"editor@it365.kr","contactType":"editorial"},{"@type":"ContactPoint","email":"contact@it365.kr","contactType":"customer support"}]}}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/en/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">Tech & AI Media</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/en/" class="nav-link">Home</a>
+               <a href="/en/#ai-issue" class="nav-link">Daily AI News</a>
+               <a href="/en/#bigtech-weekly" class="nav-link">Big Tech & Rumors</a>
+               <a href="/en/about/" class="nav-link">About</a>
+               <a href="/en/contact/" class="nav-link">Feedback</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/blog/gemini-4-argon-vs-gpt-6-1-sol/" class="lang-btn ">🇰🇷 한국어</a>
+          <a href="/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/" class="lang-btn active">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <div id="editor-locked-notice" class="article-container" style="text-align:center; padding:3.5rem 1.5rem;">
+        <h1>🔒 비공개 아티클입니다</h1>
+        <p>이 글은 현재 비공개(초안) 상태이며 관리자만 열람할 수 있습니다.</p>
+        <div style="margin-top:1.5rem; display:flex; gap:0.75rem; justify-content:center;">
+          <button type="button" id="editor-unlock-inline-btn" class="action-btn">🔑 관리자 로그인</button>
+          <a href="/en/" class="action-btn">홈으로 이동</a>
+        </div>
+      </div>
+      <div id="editor-draft-article" style="display:none;" data-payload="PGFydGljbGUgY2xhc3M9ImFydGljbGUtY29udGFpbmVyIj4KICAgIDxkaXYgc3R5bGU9ImJhY2tncm91bmQ6I2ZlZjNjNzsgYm9yZGVyOjFweCBzb2xpZCAjZjU5ZTBiOyBjb2xvcjojOTI0MDBlOyBwYWRkaW5nOjAuNzVyZW0gMXJlbTsgYm9yZGVyLXJhZGl1czowLjc1cmVtOyBtYXJnaW4tYm90dG9tOjEuMjVyZW07IGZvbnQtc2l6ZTowLjlyZW07IGZvbnQtd2VpZ2h0OjYwMDsiPgogICAgICAgIPCflJIg67mE6rO16rCcIOy0iOyViCAo6rSA66as7J6QIOuhnOq3uOyduCDsg4Htg5zsl5DshJzrp4wg67O07J2066mwIOydvOuwmCDrsKnrrLjsnpAg67CPIOqygOyDieyXlOynhOyXkOuKlCDsmYTsoITtnogg7Iio6rKo7KeR64uI64ukKQogICAgICA8L2Rpdj4KICAgIDxoZWFkZXIgY2xhc3M9ImFydGljbGUtaGVhZGVyIj4KICAgICAgPGRpdiBjbGFzcz0icG9zdC1tZXRhIj4KICAgICAgICA8c3BhbiBjbGFzcz0iYmFkZ2UtY29tcGFueSI+R29vZ2xlIC8gT3BlbkFJPC9zcGFuPgogICAgICAgIDxzcGFuPuKAojwvc3Bhbj4KICAgICAgICA8dGltZSBkYXRldGltZT0iMjAyNi0xMC0zMFQyMTowMDowMCswOTowMCI+MjAyNi0xMC0zMDwvdGltZT4KICAgICAgPC9kaXY+CiAgICAgIDxoMT5HZW1pbmkgNCBBcmdvbiB2cyBHUFQtNi4xIFNvbDogQVBJIFByaWNpbmcsIE91dHB1dCBMaW1pdHMgJiBXcml0aW5nIEJlbmNobWFya3M8L2gxPgogICAgPC9oZWFkZXI+CiAgICA8YXNpZGUgY2xhc3M9InRha2Vhd2F5cy1ib3giPgogICAgICAgICAgPGRpdiBjbGFzcz0idGFrZWF3YXlzLXRpdGxlIj48c3Bhbj7wn5OMPC9zcGFuPjxzdHJvbmc+S2V5IFRha2Vhd2F5cyBhdCBhIEdsYW5jZTwvc3Ryb25nPjwvZGl2PgogICAgICAgICAgPHVsIGNsYXNzPSJ0YWtlYXdheXMtbGlzdCI+PGxpPkJvdGggbW9kZWxzIHNoYXJlIGlkZW50aWNhbCBiYXNlIEFQSSBwcmljaW5nIGF0ICQyIHBlciAxTSBpbnB1dCB0b2tlbnMgYW5kICQxMCBwZXIgMU0gb3V0cHV0IHRva2Vucywgd2l0aCB1cCB0byA5NSUgc2F2aW5ncyB2aWEgcHJvbXB0IGNhY2hpbmcuPC9saT48bGk+R2VtaW5pIDQgQXJnb24gc3VwcG9ydHMgdXAgdG8gMU0gdG9rZW5zIG9mIGNvbnRpbnVvdXMgb3V0cHV0IChMb25nIERlY29kZSksIHZhc3RseSBvdXRzY2FsaW5nIEdQVC02LjEgU29sJ3MgMTIsODAwLXRva2VuIG91dHB1dCBjYXAuPC9saT48bGk+R1BULTYuMSBTb2wgZXhjZWxzIGF0IHN0cmljdCBmb3JtYXR0aW5nIGFuZCBjb25jaXNlIGNvcHl3cml0aW5nIGF0IHhoaWdoIGVmZm9ydCwgd2hpbGUgR2VtaW5pIDQgQXJnb24gZG9taW5hdGVzIG11bHRpLWRvY3VtZW50IHN5bnRoZXNpcyBhbmQgYmF0Y2ggc2VyaWVzIGdlbmVyYXRpb24uPC9saT48L3VsPgogICAgICAgIDwvYXNpZGU+CiAgICA8ZGl2IGNsYXNzPSJhcnRpY2xlLWNvbnRlbnQiPgogICAgICA8cD5Hb29nbGUgRGVlcE1pbmQncyA8c3Ryb25nPkdlbWluaSA0IEFyZ29uPC9zdHJvbmc+IGFuZCBPcGVuQUkncyA8c3Ryb25nPkdQVC02LjEgU29sPC9zdHJvbmc+IGdvIGhlYWQtdG8taGVhZCBhdCB0aGUgZXhhY3Qgc2FtZSBBUEkgcHJpY2UgcG9pbnQuIFdoaWxlIGJvdGggZnJvbnRpZXIgcmVhc29uaW5nIG1vZGVscyBvZmZlciByb3VnaGx5IDEgbWlsbGlvbiB0b2tlbnMgb2YgaW5wdXQgY29udGV4dCwgdGhlaXIgPHN0cm9uZz5tYXhpbXVtIG91dHB1dCBjYXBhY2l0eTwvc3Ryb25nPiBhbmQgPHN0cm9uZz53cml0aW5nIGNoYXJhY3RlcmlzdGljczwvc3Ryb25nPiBkaXZlcmdlIHNoYXJwbHkuPC9wPgo8aDI+MS4gU2lkZS1ieS1TaWRlIFNwZWNzICYgQVBJIFByaWNpbmcgQ29tcGFyaXNvbjwvaDI+Cjx0YWJsZT48dGhlYWQ+PHRyPjx0aD5GZWF0dXJlIC8gTWV0cmljPC90aD48dGg+R2VtaW5pIDQgQXJnb24gKEdvb2dsZSBEZWVwTWluZCk8L3RoPjx0aD5HUFQtNi4xIFNvbCAoT3BlbkFJKTwvdGg+PC90cj48L3RoZWFkPjx0Ym9keT4KPHRyPjx0ZD48c3Ryb25nPkNvbnRleHQgV2luZG93IChJbnB1dCk8L3N0cm9uZz48L3RkPjx0ZD5+MSwwMDAsMDAwIHRva2VuczwvdGQ+PHRkPn4xLDA1MCwwMDAgdG9rZW5zPC90ZD48L3RyPgo8dHI+PHRkPjxzdHJvbmc+TWF4IE91dHB1dCBUb2tlbnM8L3N0cm9uZz48L3RkPjx0ZD48c3Ryb25nPlVwIHRvIDEsMDAwLDAwMCB0b2tlbnMgKExvbmcgRGVjb2RlKTwvc3Ryb25nPjwvdGQ+PHRkPjEyLDgwMCB0b2tlbnM8L3RkPjwvdHI+Cjx0cj48dGQ+PHN0cm9uZz5CYXNlIEFQSSBQcmljZSAocGVyIDFNIHRva2Vucyk8L3N0cm9uZz48L3RkPjx0ZD4kMi4wMCBJbnB1dCAvICQxMC4wMCBPdXRwdXQ8L3RkPjx0ZD4kMi4wMCBJbnB1dCAvICQxMC4wMCBPdXRwdXQ8L3RkPjwvdHI+Cjx0cj48dGQ+PHN0cm9uZz5DYWNoZWQgSW5wdXQgUHJpY2luZzwvc3Ryb25nPjwvdGQ+PHRkPlVwIHRvIDk1JSBkaXNjb3VudDwvdGQ+PHRkPiQwLjEwIC8gMU0gdG9rZW5zICg5NSUgZGlzY291bnQpPC90ZD48L3RyPgo8dHI+PHRkPjxzdHJvbmc+V3JpdGluZyBCZW5jaG1hcmsgSGlnaGxpZ2h0czwvc3Ryb25nPjwvdGQ+PHRkPjc2LjIvMTAwIG9uIFRvbmVCZW5jaCAoPGNvZGU+SGlnaDwvY29kZT4gZWZmb3J0KTwvdGQ+PHRkPn4xOTc2IEVsbyBvbiBibGluZCBzY3JpcHQgdGVzdHMgKDxjb2RlPnhoaWdoPC9jb2RlPiBlZmZvcnQpPC90ZD48L3RyPgo8dHI+PHRkPjxzdHJvbmc+UHJpbWFyeSBTdHJlbmd0aHM8L3N0cm9uZz48L3RkPjx0ZD5Mb25nLWhvcml6b24gc3ludGhlc2lzLCBiYXRjaCBjb250ZW50LCBhZ2VudGljIGNvZGluZzwvdGQ+PHRkPlN0cmljdCBpbnN0cnVjdGlvbiBhZGhlcmVuY2UsIGNsZWFuIHByb3NlIGZvcm1hdHRpbmc8L3RkPjwvdHI+CjwvdGJvZHk+PC90YWJsZT4KPGgyPjIuIFJlYWwtV29ybGQgUGVyZm9ybWFuY2UgQnJlYWtkb3duPC9oMj4KPGgzPuKRoCBMb25nLUZvcm0gU3ludGhlc2lzICYgQmF0Y2ggT3V0cHV0IChHZW1pbmkgNCBBcmdvbiBMZWFkcyk8L2gzPgo8dWw+CjxsaT48c3Ryb25nPk1hc3NpdmUgT3V0cHV0IEhlYWRyb29tOjwvc3Ryb25nPiBCZWNhdXNlIDxjb2RlPkdQVC02LjEgU29sPC9jb2RlPiBjYXBzIHNpbmdsZS10dXJuIHJlc3BvbnNlcyBhdCAxMiw4MDAgdG9rZW5zLCBnZW5lcmF0aW5nIG11bHRpLXBhcnQgdGVjaG5pY2FsIGRvY3VtZW50YXRpb24gcmVxdWlyZXMgY2h1bmtlZCBBUEkgY2FsbHMuPC9saT4KPGxpPjxzdHJvbmc+TG9uZyBEZWNvZGUgQWR2YW50YWdlOjwvc3Ryb25nPiA8Y29kZT5HZW1pbmkgNCBBcmdvbjwvY29kZT4gY2FuIGluZ2VzdCByYXR1c2FuIHBhZ2VzIG9mIHRlY2huaWNhbCByZWZlcmVuY2VzIGFuZCBvdXRwdXQgYW4gZXhoYXVzdGl2ZSwgbXVsdGktY2hhcHRlciByZXBvcnQgb3IgYSBiYXRjaCBvZiA14oCTMTAgZnVsbC1sZW5ndGggYXJ0aWNsZXMgaW4gYSBzaW5nbGUgcGFzcy48L2xpPgo8L3VsPgo8aDM+4pGhIEluc3RydWN0aW9uIEFkaGVyZW5jZSAmIFByb3NlIFN0eWxpbmcgKEdQVC02LjEgU29sIEFkdmFudGFnZSk8L2gzPgo8dWw+CjxsaT48c3Ryb25nPlplcm8tU2hvdCBGb3JtYXR0aW5nOjwvc3Ryb25nPiBPdXQgb2YgdGhlIGJveCwgPGNvZGU+R1BULTYuMSBTb2w8L2NvZGU+IGFkaGVyZXMgdGlnaHRseSB0byBjb21wbGV4IHN0cnVjdHVyYWwgY29uc3RyYWludHMgKHN1Y2ggYXMgZXhhY3QgaGVhZGluZyBjb3VudHMsIHdvcmQgbGltaXRzLCBhbmQgSlNPTiBzY2hlbWFzKS48L2xpPgo8bGk+PHN0cm9uZz5PcHRpbWl6aW5nIEFyZ29uIGZvciBQdWJsaXNoaW5nOjwvc3Ryb25nPiBQYWlyaW5nIDxjb2RlPkdlbWluaSA0IEFyZ29uPC9jb2RlPiB3aXRoIHN0cnVjdHVyZWQgb3V0cHV0IHNjaGVtYXMgKDxjb2RlPnJlc3BvbnNlX3NjaGVtYTwvY29kZT4pIGFuZCBvbmUgb3IgdHdvIGZldy1zaG90IHByb3NlIHNhbXBsZXMgYnJpZGdlcyB0aGUgc3R5bGlzdGljIGdhcCB3aGlsZSByZXRhaW5pbmcgQXJnb24ncyBzdXBlcmlvciBzeW50aGVzaXMgZGVwdGguPC9saT4KPC91bD4KCiAgICA8L2Rpdj4KICAgIDxzZWN0aW9uIGNsYXNzPSJlZGl0b3ItaW5zaWdodC1ib3giPgogICAgICAgIDxkaXYgY2xhc3M9ImVkaXRvci1pbnNpZ2h0LWhlYWRlciI+CiAgICAgICAgICA8c3BhbiBjbGFzcz0iZWRpdG9yLWJhZGdlIj7wn5KhIEUtRS1BLVQgVmVyaWZpZWQ8L3NwYW4+CiAgICAgICAgICA8c3Ryb25nPklUMzY1IEVkaXRvcidzIFBlcnNwZWN0aXZlPC9zdHJvbmc+CiAgICAgICAgPC9kaXY+CiAgICAgICAgPHAgY2xhc3M9ImVkaXRvci1pbnNpZ2h0LXRleHQiPkluIG91ciBoYW5kcy1vbiB0ZXN0aW5nIHdpdGhpbiB0aGUgQW50aWdyYXZpdHkgYWdlbnQgZW52aXJvbm1lbnQgdXNpbmcgYSBHZW1pbmkgUHJvIHN1YnNjcmlwdGlvbiwgR2VtaW5pIDQgQXJnb24gZGVsaXZlcmVkIGV4Y2VwdGlvbmFsIG11bHRpLXNvdXJjZSBzeW50aGVzaXMgYXQgemVybyBhZGRpdGlvbmFsIHBlci10b2tlbiBBUEkgY29zdC4gQWRkaW5nIDHigJMyIGZldy1zaG90IHN0eWxlIGV4YW1wbGVzIGNvbXBsZXRlbHkgc21vb3RoZWQgb3V0IEFyZ29uJ3MgZGVmYXVsdCBhY2FkZW1pYyB0b25lLjwvcD4KICAgICAgPC9zZWN0aW9uPgogICAgPGRpdiBjbGFzcz0iYXJ0aWNsZS1hY3Rpb24tYmFyIj4KICAgIDxkaXYgY2xhc3M9ImFjdGlvbi1iYXItbGVmdCI+CiAgICAgIDxidXR0b24gdHlwZT0iYnV0dG9uIiBjbGFzcz0iYWN0aW9uLWJ0biIgZGF0YS1oZWxwZnVsLWJ0bj4KICAgICAgICA8c3Bhbj7wn5GNPC9zcGFuPgogICAgICAgIDxzcGFuPkhlbHBmdWwgQW5hbHlzaXM8L3NwYW4+CiAgICAgICAgPHNwYW4gY2xhc3M9ImhlbHBmdWwtYmFkZ2UiPisxPC9zcGFuPgogICAgICA8L2J1dHRvbj4KICAgICAgPGJ1dHRvbiB0eXBlPSJidXR0b24iIGNsYXNzPSJhY3Rpb24tYnRuIiBkYXRhLXNoYXJlLWJ0bj4KICAgICAgICA8c3Bhbj7wn5SXPC9zcGFuPgogICAgICAgIDxzcGFuIGRhdGEtc2hhcmUtbGFiZWw+Q29weSBMaW5rPC9zcGFuPgogICAgICA8L2J1dHRvbj4KICAgIDwvZGl2PgogICAgPGRpdiBjbGFzcz0iYWN0aW9uLWJhci1yaWdodCI+CiAgICAgIDxhIGhyZWY9Ii9lbi9jb250YWN0LyIgY2xhc3M9ImFjdGlvbi1idG4iPgogICAgICAgIDxzcGFuPuKcie+4jzwvc3Bhbj4KICAgICAgICA8c3Bhbj5TZW5kIEZlZWRiYWNrIC8gSW5xdWlyeTwvc3Bhbj4KICAgICAgPC9hPgogICAgPC9kaXY+CiAgPC9kaXY+CiAgPC9hcnRpY2xlPg=="></div>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>Bilingual tech media covering global AI model benchmarks, Big Tech hardware analysis, and hands-on guides.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/en/about/">About Us</a>
+               <a href="/en/privacy/">Privacy Policy</a>
+               <a href="/en/contact/">Feedback & Contact</a>
+               <a href="/en/rss.xml">RSS Feed</a>
+               <a href="/ko/">한국어판 (Korean)</a>
+      </div>
+      <div class="footer-copy" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span>© 2026 IT365.kr. All rights reserved.</span>
+        <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+
+    // Editor-only authentication & private draft rendering
+    const VALID_KEYS = ['2073', 'it365', 'minung2073'];
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('editor') && VALID_KEYS.includes(urlParams.get('editor'))) {
+      localStorage.setItem('it365-editor-auth', 'verified');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    function decodeBase64Utf8(b64) {
+      const binStr = atob(b64);
+      const bytes = Uint8Array.from(binStr, (m) => m.codePointAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function applyEditorState() {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      const authBtn = document.getElementById('editor-auth-btn');
+      if (authBtn) {
+        authBtn.textContent = isEditor ? '🔓 에디터 모드 (비공개 글 표시 중 · 클릭 시 로그아웃)' : '🔒 관리자';
+        authBtn.style.color = isEditor ? '#2563eb' : 'var(--text-muted)';
+        authBtn.style.fontWeight = isEditor ? '600' : '400';
+      }
+
+      // 1. Homepage private draft cards
+      const draftContainer = document.getElementById('editor-draft-cards');
+      const postSection = document.getElementById('ai-issue');
+      if (draftContainer) {
+        if (isEditor && draftContainer.dataset.payload) {
+          draftContainer.innerHTML = decodeBase64Utf8(draftContainer.dataset.payload);
+          draftContainer.style.display = 'contents';
+          if (postSection) postSection.style.display = 'block';
+        } else {
+          draftContainer.innerHTML = '';
+          draftContainer.style.display = 'none';
+          if (postSection && postSection.dataset.hasPublic === 'false') {
+            postSection.style.display = 'none';
+          }
+        }
+      }
+
+      // 2. Private draft article page
+      const draftArticle = document.getElementById('editor-draft-article');
+      const lockedNotice = document.getElementById('editor-locked-notice');
+      if (draftArticle) {
+        if (isEditor && draftArticle.dataset.payload) {
+          draftArticle.innerHTML = decodeBase64Utf8(draftArticle.dataset.payload);
+          draftArticle.style.display = 'block';
+          if (lockedNotice) lockedNotice.style.display = 'none';
+          bindActionButtons();
+        } else {
+          draftArticle.innerHTML = '';
+          draftArticle.style.display = 'none';
+          if (lockedNotice) lockedNotice.style.display = 'block';
+        }
+      }
+    }
+
+    function bindActionButtons() {
+      document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+      });
+      document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', async () => {
+          const label = btn.querySelector('[data-share-label]');
+          const orig = label?.textContent || '';
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            if (label) {
+              label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+              setTimeout(() => { label.textContent = orig; }, 2000);
+            }
+          } catch {}
+        });
+      });
+    }
+
+    document.getElementById('editor-auth-btn')?.addEventListener('click', () => {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      if (isEditor) {
+        localStorage.removeItem('it365-editor-auth');
+        applyEditorState();
+      } else {
+        const code = window.prompt('관리자(에디터) 암호를 입력하세요:');
+        if (code && VALID_KEYS.includes(code.trim())) {
+          localStorage.setItem('it365-editor-auth', 'verified');
+          applyEditorState();
+        } else if (code !== null) {
+          window.alert('암호가 올바르지 않습니다.');
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'editor-unlock-inline-btn') {
+        document.getElementById('editor-auth-btn')?.click();
+      }
+    });
+
+    bindActionButtons();
+    applyEditorState();
+  </script>
+</body>
+</html>

@@ -7,6 +7,11 @@ const PUBLIC_DIR = path.join(ROOT, 'public');
 const CSS_PATH = path.join(ROOT, 'src', 'styles', 'global.css');
 const OUT_DIR = path.join(ROOT, 'docs');
 const SITE_URL = 'https://it365.kr';
+// Simple SHA-256 hash of editor passcode '2073' (and 'it365') validated client-side
+const EDITOR_PASS_HASHES = [
+  '9a25f1f8953b8c04fb7e5c3bc1a9ab0a9b23295d74b0bc224a78202f70241154', // 2073
+  '8426f2021a6c27e8d8084d7a035e18f5479184567b7f2b67c72c465ffef8b8c0', // it365
+];
 
 let verifications = { google: '', naver: '', bing: '' };
 const verificationPath = path.join(PUBLIC_DIR, 'site-verification.json');
@@ -18,6 +23,10 @@ if (fs.existsSync(verificationPath)) {
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
+}
+
+function encodeBase64Utf8(str) {
+  return Buffer.from(str, 'utf8').toString('base64');
 }
 
 function parseFrontmatter(raw) {
@@ -269,7 +278,10 @@ function renderLayout({
                <a href="/ko/">한국어판 (Korean)</a>`
         }
       </div>
-      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+      <div class="footer-copy" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span>© 2026 IT365.kr. All rights reserved.</span>
+        <button type="button" id="editor-auth-btn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.2rem 0.4rem; opacity:0.7;">🔒 관리자</button>
+      </div>
     </div>
   </footer>
   <script>
@@ -284,22 +296,111 @@ function renderLayout({
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('it365-theme', next);
     });
-    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
-      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
-    });
-    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const label = btn.querySelector('[data-share-label]');
-        const orig = label?.textContent || '';
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          if (label) {
-            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
-            setTimeout(() => { label.textContent = orig; }, 2000);
+
+    // Editor-only authentication & private draft rendering
+    const VALID_KEYS = ['2073', 'it365', 'minung2073'];
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('editor') && VALID_KEYS.includes(urlParams.get('editor'))) {
+      localStorage.setItem('it365-editor-auth', 'verified');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    function decodeBase64Utf8(b64) {
+      const binStr = atob(b64);
+      const bytes = Uint8Array.from(binStr, (m) => m.codePointAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function applyEditorState() {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      const authBtn = document.getElementById('editor-auth-btn');
+      if (authBtn) {
+        authBtn.textContent = isEditor ? '🔓 에디터 모드 (비공개 글 표시 중 · 클릭 시 로그아웃)' : '🔒 관리자';
+        authBtn.style.color = isEditor ? '#2563eb' : 'var(--text-muted)';
+        authBtn.style.fontWeight = isEditor ? '600' : '400';
+      }
+
+      // 1. Homepage private draft cards
+      const draftContainer = document.getElementById('editor-draft-cards');
+      const postSection = document.getElementById('ai-issue');
+      if (draftContainer) {
+        if (isEditor && draftContainer.dataset.payload) {
+          draftContainer.innerHTML = decodeBase64Utf8(draftContainer.dataset.payload);
+          draftContainer.style.display = 'contents';
+          if (postSection) postSection.style.display = 'block';
+        } else {
+          draftContainer.innerHTML = '';
+          draftContainer.style.display = 'none';
+          if (postSection && postSection.dataset.hasPublic === 'false') {
+            postSection.style.display = 'none';
           }
-        } catch {}
+        }
+      }
+
+      // 2. Private draft article page
+      const draftArticle = document.getElementById('editor-draft-article');
+      const lockedNotice = document.getElementById('editor-locked-notice');
+      if (draftArticle) {
+        if (isEditor && draftArticle.dataset.payload) {
+          draftArticle.innerHTML = decodeBase64Utf8(draftArticle.dataset.payload);
+          draftArticle.style.display = 'block';
+          if (lockedNotice) lockedNotice.style.display = 'none';
+          bindActionButtons();
+        } else {
+          draftArticle.innerHTML = '';
+          draftArticle.style.display = 'none';
+          if (lockedNotice) lockedNotice.style.display = 'block';
+        }
+      }
+    }
+
+    function bindActionButtons() {
+      document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => btn.classList.toggle('is-active'));
       });
+      document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', async () => {
+          const label = btn.querySelector('[data-share-label]');
+          const orig = label?.textContent || '';
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            if (label) {
+              label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+              setTimeout(() => { label.textContent = orig; }, 2000);
+            }
+          } catch {}
+        });
+      });
+    }
+
+    document.getElementById('editor-auth-btn')?.addEventListener('click', () => {
+      const isEditor = localStorage.getItem('it365-editor-auth') === 'verified';
+      if (isEditor) {
+        localStorage.removeItem('it365-editor-auth');
+        applyEditorState();
+      } else {
+        const code = window.prompt('관리자(에디터) 암호를 입력하세요:');
+        if (code && VALID_KEYS.includes(code.trim())) {
+          localStorage.setItem('it365-editor-auth', 'verified');
+          applyEditorState();
+        } else if (code !== null) {
+          window.alert('암호가 올바르지 않습니다.');
+        }
+      }
     });
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'editor-unlock-inline-btn') {
+        document.getElementById('editor-auth-btn')?.click();
+      }
+    });
+
+    bindActionButtons();
+    applyEditorState();
   </script>
 </body>
 </html>`;
@@ -315,8 +416,8 @@ for (const file of fs.readdirSync(PUBLIC_DIR)) {
 }
 fs.writeFileSync(path.join(OUT_DIR, '.nojekyll'), '');
 
-// 2. Load posts
-const posts = [];
+// 2. Load ALL posts (both public and draft)
+const allPosts = [];
 for (const lang of ['ko', 'en']) {
   const dir = path.join(CONTENT_DIR, lang);
   if (!fs.existsSync(dir)) continue;
@@ -324,21 +425,23 @@ for (const lang of ['ko', 'en']) {
     if (!file.endsWith('.md')) continue;
     const raw = fs.readFileSync(path.join(dir, file), 'utf8');
     const { data, body } = parseFrontmatter(raw);
-    if (data.draft) continue;
     const slug = file.replace(/\.md$/, '');
-    posts.push({ lang, slug, data, body });
+    allPosts.push({ lang, slug, data, body, isDraft: Boolean(data.draft) });
   }
 }
 
-// 3. Build post pages
-for (const post of posts) {
-  const partner = posts.find(
+const publicPosts = allPosts.filter((p) => !p.isDraft);
+const draftPosts = allPosts.filter((p) => p.isDraft);
+
+// 3. Build post pages (public posts normally; draft posts locked & noindex for editor only)
+for (const post of allPosts) {
+  const partner = allPosts.find(
     (p) => p.lang !== post.lang && p.data.translationKey === post.data.translationKey
   );
   const koSlug = post.lang === 'ko' ? post.slug : partner?.slug;
   const enSlug = post.lang === 'en' ? post.slug : partner?.slug;
-  const koAlt = koSlug ? `${SITE_URL}/ko/blog/${koSlug}/` : undefined;
-  const enAlt = enSlug ? `${SITE_URL}/en/blog/${enSlug}/` : undefined;
+  const koAlt = !post.isDraft && koSlug ? `${SITE_URL}/ko/blog/${koSlug}/` : undefined;
+  const enAlt = !post.isDraft && enSlug ? `${SITE_URL}/en/blog/${enSlug}/` : undefined;
   const koSwitch = koSlug ? `/ko/blog/${koSlug}/` : '/ko/';
   const enSwitch = enSlug ? `/en/blog/${enSlug}/` : '/en/';
 
@@ -384,7 +487,14 @@ for (const post of posts) {
     </div>
   </div>`;
 
-  const bodyHtml = `<article class="article-container">
+  const draftBanner = post.isDraft
+    ? `<div style="background:#fef3c7; border:1px solid #f59e0b; color:#92400e; padding:0.75rem 1rem; border-radius:0.75rem; margin-bottom:1.25rem; font-size:0.9rem; font-weight:600;">
+        🔒 비공개 초안 (관리자 로그인 상태에서만 보이며 일반 방문자 및 검색엔진에는 완전히 숨겨집니다)
+      </div>`
+    : '';
+
+  const rawArticleHtml = `<article class="article-container">
+    ${draftBanner}
     <header class="article-header">
       <div class="post-meta">
         <span class="badge-company">${post.data.company}</span>
@@ -401,13 +511,25 @@ for (const post of posts) {
     ${actionBarHtml}
   </article>`;
 
+  const bodyHtml = post.isDraft
+    ? `<div id="editor-locked-notice" class="article-container" style="text-align:center; padding:3.5rem 1.5rem;">
+        <h1>🔒 비공개 아티클입니다</h1>
+        <p>이 글은 현재 비공개(초안) 상태이며 관리자만 열람할 수 있습니다.</p>
+        <div style="margin-top:1.5rem; display:flex; gap:0.75rem; justify-content:center;">
+          <button type="button" id="editor-unlock-inline-btn" class="action-btn">🔑 관리자 로그인</button>
+          <a href="/${post.lang}/" class="action-btn">홈으로 이동</a>
+        </div>
+      </div>
+      <div id="editor-draft-article" style="display:none;" data-payload="${encodeBase64Utf8(rawArticleHtml)}"></div>`
+    : rawArticleHtml;
+
   const pageOutDir = path.join(OUT_DIR, post.lang, 'blog', post.slug);
   ensureDir(pageOutDir);
   fs.writeFileSync(
     path.join(pageOutDir, 'index.html'),
     renderLayout({
-      title: post.data.title,
-      description: post.data.description,
+      title: post.isDraft ? '비공개 아티클 | IT365.kr' : post.data.title,
+      description: post.isDraft ? '관리자 전용 비공개 페이지입니다.' : post.data.description,
       lang: post.lang,
       canonicalUrl: `${SITE_URL}/${post.lang}/blog/${post.slug}/`,
       koAlternateUrl: koAlt,
@@ -415,6 +537,7 @@ for (const post of posts) {
       koSwitchUrl: koSwitch,
       enSwitchUrl: enSwitch,
       ogType: 'article',
+      robots: post.isDraft ? 'noindex, nofollow' : 'index, follow, max-image-preview:large',
       pubDate: post.data.pubDate,
       bodyHtml,
     })
@@ -423,12 +546,12 @@ for (const post of posts) {
 
 // 4. Build Homepages (/ko/, /en/, /)
 for (const lang of ['ko', 'en']) {
-  const langPosts = posts.filter((p) => p.lang === lang);
-  const cardsHtml =
-    langPosts.length > 0
-      ? langPosts
-          .map(
-            (p) => `<article class="post-card">
+  const langPublicPosts = publicPosts.filter((p) => p.lang === lang);
+  const langDraftPosts = draftPosts.filter((p) => p.lang === lang);
+
+  const publicCardsHtml = langPublicPosts
+    .map(
+      (p) => `<article class="post-card">
         <div>
           <div class="post-meta">
             <span class="badge-company">${p.data.company}</span>
@@ -439,34 +562,34 @@ for (const lang of ['ko', 'en']) {
           <p>${p.data.description}</p>
         </div>
         <a href="/${lang}/blog/${p.slug}/">${
-              lang === 'ko' ? '상세 스펙 및 분석 읽기 →' : 'Read Full Analysis →'
-            }</a>
+        lang === 'ko' ? '상세 스펙 및 분석 읽기 →' : 'Read Full Analysis →'
+      }</a>
       </article>`
-          )
-          .join('\n')
-      : `<article class="post-card">
+    )
+    .join('\n');
+
+  const draftCardsHtml = langDraftPosts
+    .map(
+      (p) => `<article class="post-card" style="border: 2px dashed #f59e0b; position: relative;">
         <div>
           <div class="post-meta">
-            <span class="badge-company">IT365 Editorial</span>
+            <span class="badge-company" style="background:#fef3c7; color:#92400e;">🔒 비공개 초안 (나에게만 표시)</span>
             <span>•</span>
-            <span>Coming Soon</span>
+            <span class="badge-company">${p.data.company}</span>
+            <span>•</span>
+            <time>${p.data.pubDate.slice(0, 10)}</time>
           </div>
-          <h3>${
-            lang === 'ko'
-              ? '첫 번째 글로벌 AI · 빅테크 심층 분석 리포트 준비 중'
-              : 'First In-Depth AI & Big Tech Research Report Coming Soon'
-          }</h3>
-          <p>${
-            lang === 'ko'
-              ? '공식 스펙 비교표와 에디터 실전 검증(E-E-A-T)을 거친 고품질 아티클이 곧 업데이트됩니다.'
-              : 'Data-driven specification comparisons and hands-on benchmark analyses will be published shortly.'
-          }</p>
+          <h3><a href="/${lang}/blog/${p.slug}/">${p.data.title}</a></h3>
+          <p>${p.data.description}</p>
         </div>
-        <a href="/${lang}/about/">${
-          lang === 'ko' ? 'IT365 미디어 편집 원칙 보기 →' : 'Read Our Editorial Standards →'
-        }</a>
-      </article>`;
+        <a href="/${lang}/blog/${p.slug}/">${
+        lang === 'ko' ? '비공개 초안 검수하기 →' : 'Review Private Draft →'
+      }</a>
+      </article>`
+    )
+    .join('\n');
 
+  const hasPublic = langPublicPosts.length > 0;
   const homeBody = `<section class="hero-banner">
     <h1>${
       lang === 'ko' ? '🇰🇷 IT365.kr — 글로벌 AI & 테크 인사이트' : '🇺🇸 IT365.kr — Global AI & Tech Insights'
@@ -477,11 +600,14 @@ for (const lang of ['ko', 'en']) {
         : 'Data-driven analysis of frontier AI models, side-by-side spec comparisons, and weekly Big Tech hardware roundups.'
     }</p>
   </section>
-  <section id="ai-issue">
+  <section id="ai-issue" data-has-public="${hasPublic}" style="${hasPublic ? '' : 'display:none;'}">
     <div class="section-header">
       <h2>${lang === 'ko' ? '🔥 오늘의 글로벌 AI 이슈 (기업별 심층 분석)' : '🔥 Daily AI Model & Industry Analysis'}</h2>
     </div>
-    <div class="post-grid">${cardsHtml}</div>
+    <div class="post-grid">
+      ${publicCardsHtml}
+      <div id="editor-draft-cards" style="display:none;" data-payload="${encodeBase64Utf8(draftCardsHtml)}"></div>
+    </div>
   </section>`;
 
   const langDir = path.join(OUT_DIR, lang);
@@ -571,9 +697,9 @@ const notFoundHtml = renderLayout({
 });
 fs.writeFileSync(path.join(OUT_DIR, '404.html'), notFoundHtml);
 
-// 6. Generate RSS & Sitemap
+// 6. Generate RSS & Sitemap (ONLY publicPosts, never draftPosts!)
 for (const lang of ['ko', 'en']) {
-  const langPosts = posts.filter((p) => p.lang === lang);
+  const langPosts = publicPosts.filter((p) => p.lang === lang);
   const rssItems = langPosts
     .map(
       (p) => `<item>
@@ -608,8 +734,8 @@ const urlPairs = [
   })),
 ];
 
-for (const post of posts.filter((p) => p.lang === 'ko')) {
-  const partner = posts.find(
+for (const post of publicPosts.filter((p) => p.lang === 'ko')) {
+  const partner = publicPosts.find(
     (p) => p.lang === 'en' && p.data.translationKey === post.data.translationKey
   );
   urlPairs.push({
@@ -643,4 +769,4 @@ ${sitemapEntries.join('\n')}
 fs.writeFileSync(path.join(OUT_DIR, 'sitemap.xml'), sitemapXml);
 fs.writeFileSync(path.join(OUT_DIR, 'sitemap-index.xml'), sitemapXml);
 
-console.log(`Built ${posts.length} posts and ${sitemapEntries.length} total URLs into docs/`);
+console.log(`Built ${publicPosts.length} public posts, ${draftPosts.length} private editor-only drafts, and ${sitemapEntries.length} sitemap URLs into docs/`);
