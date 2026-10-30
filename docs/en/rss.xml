@@ -5,12 +5,6 @@
     <link>https://it365.kr/en/</link>
     <description>IT365.kr Global AI &amp; Tech Media</description>
     <language>en-us</language>
-    <item>
-      <title><![CDATA[Gemini 4 Argon vs GPT-6.1 Sol: API Pricing, Output Limits & Writing Benchmarks]]></title>
-      <link>https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/</link>
-      <guid>https://it365.kr/en/blog/gemini-4-argon-vs-gpt-6-1-sol-benchmarks-pricing/</guid>
-      <pubDate>Fri, 30 Oct 2026 12:00:00 GMT</pubDate>
-      <description><![CDATA[A data-driven comparison of Google DeepMind's Gemini 4 Argon and OpenAI's GPT-6.1 Sol across context windows, Long Decode output limits, API caching costs, and real-world writing performance.]]></description>
-    </item>
+    
   </channel>
 </rss>

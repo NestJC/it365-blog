@@ -36,4 +36,16 @@ try {
     Write-Host "`n[2] 아직 www.it365.kr CNAME 레코드가 조회되지 않습니다." -ForegroundColor Yellow
 }
 
+try {
+    $mxRecords = Resolve-DnsName -Name "it365.kr" -Type MX -ErrorAction Stop
+    Write-Host "`n[3] 현재 it365.kr의 메일(MX) 레코드:" -ForegroundColor Yellow
+    foreach ($mx in $mxRecords) {
+        if ($mx.NameExchange) {
+            Write-Host "  ✉️ $($mx.NameExchange) (우선순위: $($mx.Preference))" -ForegroundColor Green
+        }
+    }
+} catch {
+    Write-Host "`n[3] 아직 it365.kr에 등록된 메일(MX) 레코드가 없습니다." -ForegroundColor Yellow
+}
+
 Write-Host "`n====================================================" -ForegroundColor Cyan

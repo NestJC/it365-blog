@@ -13,7 +13,7 @@ takeaways:
   - "GPT-6.1 Sol excels at strict formatting and concise copywriting at xhigh effort, while Gemini 4 Argon dominates multi-document synthesis and batch series generation."
 editorNote: "In our hands-on testing within the Antigravity agent environment using a Gemini Pro subscription, Gemini 4 Argon delivered exceptional multi-source synthesis at zero additional per-token API cost. Adding 1–2 few-shot style examples completely smoothed out Argon's default academic tone."
 coupangEnabled: false
-draft: false
+draft: true
 ---
 
 Google DeepMind's **Gemini 4 Argon** and OpenAI's **GPT-6.1 Sol** go head-to-head at the exact same API price point. While both frontier reasoning models offer roughly 1 million tokens of input context, their **maximum output capacity** and **writing characteristics** diverge sharply.

@@ -8,6 +8,14 @@ const CSS_PATH = path.join(ROOT, 'src', 'styles', 'global.css');
 const OUT_DIR = path.join(ROOT, 'docs');
 const SITE_URL = 'https://it365.kr';
 
+let verifications = { google: '', naver: '', bing: '' };
+const verificationPath = path.join(PUBLIC_DIR, 'site-verification.json');
+if (fs.existsSync(verificationPath)) {
+  try {
+    verifications = { ...verifications, ...JSON.parse(fs.readFileSync(verificationPath, 'utf8')) };
+  } catch {}
+}
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -48,7 +56,6 @@ function renderMarkdown(md) {
   let html = '';
   let inList = false;
   let inTable = false;
-  let tableHeaderDone = false;
 
   const formatInline = (text) =>
     text
@@ -67,7 +74,6 @@ function renderMarkdown(md) {
       if (inTable) {
         html += '</tbody></table>\n';
         inTable = false;
-        tableHeaderDone = false;
       }
       continue;
     }
@@ -89,7 +95,6 @@ function renderMarkdown(md) {
         html += '<table><thead><tr>';
         for (const c of cells) html += `<th>${formatInline(c)}</th>`;
         html += '</tr></thead><tbody>\n';
-        tableHeaderDone = true;
       } else {
         html += '<tr>';
         for (const c of cells) html += `<td>${formatInline(c)}</td>`;
@@ -101,7 +106,6 @@ function renderMarkdown(md) {
     if (inTable) {
       html += '</tbody></table>\n';
       inTable = false;
-      tableHeaderDone = false;
     }
 
     if (line.startsWith('### ')) {
@@ -145,6 +149,7 @@ function renderLayout({
   koSwitchUrl = '/ko/',
   enSwitchUrl = '/en/',
   ogType = 'website',
+  robots = 'index, follow, max-image-preview:large',
   pubDate,
   bodyHtml,
 }) {
@@ -159,6 +164,23 @@ function renderLayout({
     inLanguage: lang === 'ko' ? 'ko-KR' : 'en-US',
     datePublished: pubDate || undefined,
     url: canonicalUrl,
+    publisher: {
+      '@type': 'Organization',
+      name: 'IT365.kr',
+      url: SITE_URL,
+      contactPoint: [
+        {
+          '@type': 'ContactPoint',
+          email: 'editor@it365.kr',
+          contactType: 'editorial',
+        },
+        {
+          '@type': 'ContactPoint',
+          email: 'contact@it365.kr',
+          contactType: 'customer support',
+        },
+      ],
+    },
   };
 
   return `<!doctype html>
@@ -169,7 +191,10 @@ function renderLayout({
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>${fullTitle}</title>
   <meta name="description" content="${description.replace(/"/g, '&quot;')}" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="robots" content="${robots}" />
+  ${verifications.google ? `<meta name="google-site-verification" content="${verifications.google}" />` : ''}
+  ${verifications.naver ? `<meta name="naver-site-verification" content="${verifications.naver}" />` : ''}
+  ${verifications.bing ? `<meta name="msvalidate.01" content="${verifications.bing}" />` : ''}
   <link rel="canonical" href="${canonicalUrl}" />
   ${koAlternateUrl ? `<link rel="alternate" hreflang="ko" href="${koAlternateUrl}" />` : ''}
   ${enAlternateUrl ? `<link rel="alternate" hreflang="en" href="${enAlternateUrl}" />` : ''}
@@ -285,6 +310,7 @@ fs.rmSync(OUT_DIR, { recursive: true, force: true });
 ensureDir(path.join(OUT_DIR, 'assets'));
 fs.copyFileSync(CSS_PATH, path.join(OUT_DIR, 'assets', 'global.css'));
 for (const file of fs.readdirSync(PUBLIC_DIR)) {
+  if (file === 'site-verification.json') continue;
   fs.copyFileSync(path.join(PUBLIC_DIR, file), path.join(OUT_DIR, file));
 }
 fs.writeFileSync(path.join(OUT_DIR, '.nojekyll'), '');
@@ -398,9 +424,11 @@ for (const post of posts) {
 // 4. Build Homepages (/ko/, /en/, /)
 for (const lang of ['ko', 'en']) {
   const langPosts = posts.filter((p) => p.lang === lang);
-  const cardsHtml = langPosts
-    .map(
-      (p) => `<article class="post-card">
+  const cardsHtml =
+    langPosts.length > 0
+      ? langPosts
+          .map(
+            (p) => `<article class="post-card">
         <div>
           <div class="post-meta">
             <span class="badge-company">${p.data.company}</span>
@@ -411,11 +439,33 @@ for (const lang of ['ko', 'en']) {
           <p>${p.data.description}</p>
         </div>
         <a href="/${lang}/blog/${p.slug}/">${
-        lang === 'ko' ? '상세 스펙 및 분석 읽기 →' : 'Read Full Analysis →'
-      }</a>
+              lang === 'ko' ? '상세 스펙 및 분석 읽기 →' : 'Read Full Analysis →'
+            }</a>
       </article>`
-    )
-    .join('\n');
+          )
+          .join('\n')
+      : `<article class="post-card">
+        <div>
+          <div class="post-meta">
+            <span class="badge-company">IT365 Editorial</span>
+            <span>•</span>
+            <span>Coming Soon</span>
+          </div>
+          <h3>${
+            lang === 'ko'
+              ? '첫 번째 글로벌 AI · 빅테크 심층 분석 리포트 준비 중'
+              : 'First In-Depth AI & Big Tech Research Report Coming Soon'
+          }</h3>
+          <p>${
+            lang === 'ko'
+              ? '공식 스펙 비교표와 에디터 실전 검증(E-E-A-T)을 거친 고품질 아티클이 곧 업데이트됩니다.'
+              : 'Data-driven specification comparisons and hands-on benchmark analyses will be published shortly.'
+          }</p>
+        </div>
+        <a href="/${lang}/about/">${
+          lang === 'ko' ? 'IT365 미디어 편집 원칙 보기 →' : 'Read Our Editorial Standards →'
+        }</a>
+      </article>`;
 
   const homeBody = `<section class="hero-banner">
     <h1>${
@@ -457,21 +507,21 @@ for (const lang of ['ko', 'en']) {
   }
 }
 
-// 5. Build About, Privacy, Contact pages + RSS + Sitemap
+// 5. Build About, Privacy, Contact pages + 404 + RSS + Sitemap
 const staticPages = [
   {
     slug: 'about',
     koTitle: '미디어 소개 (About Us)',
     enTitle: 'About Us',
-    koBody: `<article class="article-container"><h1>미디어 소개 (About IT365.kr)</h1><p><strong>IT365.kr</strong>은 급변하는 글로벌 인공지능(AI) 생태계와 빅테크 하드웨어 트렌드를 한국어(<code>/ko/</code>)와 영어(<code>/en/</code>)로 분석해 전달하는 디지털 테크 미디어입니다.</p><h2>핵심 편집 원칙</h2><ul><li><strong>데이터 기반 비교 분석:</strong> 공식 스펙·API 가격·벤치마크 수치를 표(Table)로 구조화하여 객관적인 비교 기준을 제시합니다.</li><li><strong>기업/모델별 심층 브리핑:</strong> OpenAI, Google, Anthropic, Samsung, Apple 등 주요 빅테크 발표를 개별 아티클로 다룹니다.</li><li><strong>실전 검증과 에디터 인사이트:</strong> 모든 아티클은 에디터의 직접 검토와 실사용 체감 코멘트(Editor's Perspective)를 거쳐 발행됩니다.</li></ul></article>`,
-    enBody: `<article class="article-container"><h1>About IT365.kr</h1><p><strong>IT365.kr</strong> is a bilingual technology media publication covering frontier AI models, developer tools, and Big Tech hardware in both English (<code>/en/</code>) and Korean (<code>/ko/</code>).</p><h2>Our Editorial Standards</h2><ul><li><strong>Data-First Comparisons:</strong> Every article includes structured specification tables, verified API pricing, and benchmark metrics.</li><li><strong>Human-in-the-Loop Verification:</strong> Every post features an Editor's Perspective section reflecting hands-on testing and practical evaluation.</li></ul></article>`,
+    koBody: `<article class="article-container"><h1>미디어 소개 (About IT365.kr)</h1><p><strong>IT365.kr</strong>은 급변하는 글로벌 인공지능(AI) 생태계와 빅테크 하드웨어 트렌드를 한국어(<code>/ko/</code>)와 영어(<code>/en/</code>)로 분석해 전달하는 디지털 테크 미디어입니다.</p><h2>핵심 편집 원칙</h2><ul><li><strong>데이터 기반 비교 분석:</strong> 공식 스펙·API 가격·벤치마크 수치를 표(Table)로 구조화하여 객관적인 비교 기준을 제시합니다.</li><li><strong>기업/모델별 심층 브리핑:</strong> OpenAI, Google, Anthropic, Samsung, Apple 등 주요 빅테크 발표를 개별 아티클로 다룹니다.</li><li><strong>실전 검증과 에디터 인사이트:</strong> 모든 아티클은 에디터의 직접 검토와 실사용 체감 코멘트(Editor's Perspective)를 거쳐 발행됩니다.</li></ul><h2>공식 문의처</h2><ul><li><strong>편집부 및 독자 의견:</strong> <a href="mailto:editor@it365.kr">editor@it365.kr</a></li><li><strong>비즈니스 및 제휴 문의:</strong> <a href="mailto:contact@it365.kr">contact@it365.kr</a></li></ul></article>`,
+    enBody: `<article class="article-container"><h1>About IT365.kr</h1><p><strong>IT365.kr</strong> is a bilingual technology media publication covering frontier AI models, developer tools, and Big Tech hardware in both English (<code>/en/</code>) and Korean (<code>/ko/</code>).</p><h2>Our Editorial Standards</h2><ul><li><strong>Data-First Comparisons:</strong> Every article includes structured specification tables, verified API pricing, and benchmark metrics.</li><li><strong>Human-in-the-Loop Verification:</strong> Every post features an Editor's Perspective section reflecting hands-on testing and practical evaluation.</li></ul><h2>Official Contact</h2><ul><li><strong>Editorial Desk:</strong> <a href="mailto:editor@it365.kr">editor@it365.kr</a></li><li><strong>Business & Partnerships:</strong> <a href="mailto:contact@it365.kr">contact@it365.kr</a></li></ul></article>`,
   },
   {
     slug: 'privacy',
     koTitle: '개인정보처리방침 (Privacy Policy)',
     enTitle: 'Privacy Policy',
-    koBody: `<article class="article-container"><h1>개인정보처리방침 (Privacy Policy)</h1><p>최종 시행일: 2026년 10월 30일</p><p><strong>IT365.kr</strong>은 방문자의 개인정보를 중요하게 생각하며 관련 법령 및 Google AdSense 정책을 준수합니다.</p><h2>1. Google AdSense 및 쿠키 고지</h2><ul><li>Google을 포함한 제3자 광고 사업자는 쿠키를 사용하여 사용자의 이전 방문 기록을 기반으로 맞춤형 광고를 게재합니다.</li><li>사용자는 언제든지 <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google 광고 설정</a>에서 맞춤형 광고를 해제할 수 있습니다.</li></ul><h2>2. 제휴 마케팅 고지</h2><p>일부 한국어 기기 리뷰 글에는 쿠팡 파트너스 링크가 포함될 수 있으며 공정위 심사지침에 따른 대가성 문구를 명확히 표기합니다.</p></article>`,
-    enBody: `<article class="article-container"><h1>Privacy Policy</h1><p>Effective Date: October 30, 2026</p><p>At <strong>IT365.kr</strong>, we respect visitor privacy and comply with Google Publisher Policies.</p><h2>Google AdSense & Cookies</h2><ul><li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits.</li><li>Users may opt out of personalized advertising at <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>.</li></ul></article>`,
+    koBody: `<article class="article-container"><h1>개인정보처리방침 (Privacy Policy)</h1><p>최종 시행일: 2026년 10월 30일</p><p><strong>IT365.kr</strong>은 방문자의 개인정보를 중요하게 생각하며 관련 법령 및 Google AdSense 정책을 준수합니다.</p><h2>1. Google AdSense 및 쿠키 고지</h2><ul><li>Google을 포함한 제3자 광고 사업자는 쿠키를 사용하여 사용자의 이전 방문 기록을 기반으로 맞춤형 광고를 게재합니다.</li><li>사용자는 언제든지 <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google 광고 설정</a>에서 맞춤형 광고를 해제할 수 있습니다.</li></ul><h2>2. 제휴 마케팅 고지</h2><p>일부 한국어 기기 리뷰 글에는 쿠팡 파트너스 링크가 포함될 수 있으며 공정위 심사지침에 따른 대가성 문구를 명확히 표기합니다.</p><h2>3. 개인정보 보호 문의</h2><p>개인정보 및 정책 관련 문의는 <a href="mailto:contact@it365.kr">contact@it365.kr</a>로 연락해 주시기 바랍니다.</p></article>`,
+    enBody: `<article class="article-container"><h1>Privacy Policy</h1><p>Effective Date: October 30, 2026</p><p>At <strong>IT365.kr</strong>, we respect visitor privacy and comply with Google Publisher Policies.</p><h2>Google AdSense & Cookies</h2><ul><li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits.</li><li>Users may opt out of personalized advertising at <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>.</li></ul><h2>Privacy Inquiries</h2><p>For any privacy-related inquiries, please contact us at <a href="mailto:contact@it365.kr">contact@it365.kr</a>.</p></article>`,
   },
   {
     slug: 'contact',
@@ -503,6 +553,24 @@ for (const sp of staticPages) {
   }
 }
 
+// Custom 404.html
+const notFoundHtml = renderLayout({
+  title: '페이지를 찾을 수 없습니다 (404 Not Found)',
+  description: '요청하신 페이지가 이동되었거나 비공개 전환되었습니다.',
+  lang: 'ko',
+  canonicalUrl: `${SITE_URL}/404.html`,
+  robots: 'noindex, follow',
+  bodyHtml: `<article class="article-container" style="text-align:center; padding: 3rem 1.5rem;">
+    <h1>404 — 페이지를 찾을 수 없습니다</h1>
+    <p>요청하신 아티클이 비공개(초안) 상태로 전환되었거나 주소가 변경되었습니다.<br/>The requested page has been moved or set to private draft status.</p>
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/ko/" class="action-btn">🇰🇷 한국어 홈으로 이동 (/ko/)</a>
+      <a href="/en/" class="action-btn">🇺🇸 Go to English Home (/en/)</a>
+    </div>
+  </article>`,
+});
+fs.writeFileSync(path.join(OUT_DIR, '404.html'), notFoundHtml);
+
 // 6. Generate RSS & Sitemap
 for (const lang of ['ko', 'en']) {
   const langPosts = posts.filter((p) => p.lang === lang);
@@ -530,18 +598,49 @@ for (const lang of ['ko', 'en']) {
   fs.writeFileSync(path.join(OUT_DIR, lang, 'rss.xml'), rssXml);
 }
 
-const allUrls = [
-  `${SITE_URL}/ko/`,
-  `${SITE_URL}/en/`,
-  ...staticPages.flatMap((sp) => [`${SITE_URL}/ko/${sp.slug}/`, `${SITE_URL}/en/${sp.slug}/`]),
-  ...posts.map((p) => `${SITE_URL}/${p.lang}/blog/${p.slug}/`),
+const todayIso = new Date().toISOString().slice(0, 10);
+const urlPairs = [
+  { ko: `${SITE_URL}/ko/`, en: `${SITE_URL}/en/`, lastmod: todayIso },
+  ...staticPages.map((sp) => ({
+    ko: `${SITE_URL}/ko/${sp.slug}/`,
+    en: `${SITE_URL}/en/${sp.slug}/`,
+    lastmod: todayIso,
+  })),
 ];
 
+for (const post of posts.filter((p) => p.lang === 'ko')) {
+  const partner = posts.find(
+    (p) => p.lang === 'en' && p.data.translationKey === post.data.translationKey
+  );
+  urlPairs.push({
+    ko: `${SITE_URL}/ko/blog/${post.slug}/`,
+    en: partner ? `${SITE_URL}/en/blog/${partner.slug}/` : undefined,
+    lastmod: post.data.pubDate.slice(0, 10),
+  });
+}
+
+const sitemapEntries = [];
+for (const pair of urlPairs) {
+  for (const loc of [pair.ko, pair.en].filter(Boolean)) {
+    sitemapEntries.push(`  <url>
+    <loc>${loc}</loc>
+    <lastmod>${pair.lastmod}</lastmod>${
+      pair.ko && pair.en
+        ? `
+    <xhtml:link rel="alternate" hreflang="ko" href="${pair.ko}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${pair.en}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${pair.en}" />`
+        : ''
+    }
+  </url>`);
+  }
+}
+
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allUrls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${sitemapEntries.join('\n')}
 </urlset>`;
 fs.writeFileSync(path.join(OUT_DIR, 'sitemap.xml'), sitemapXml);
 fs.writeFileSync(path.join(OUT_DIR, 'sitemap-index.xml'), sitemapXml);
 
-console.log(`Built ${posts.length} posts and ${allUrls.length} total URLs into docs/`);
+console.log(`Built ${posts.length} posts and ${sitemapEntries.length} total URLs into docs/`);

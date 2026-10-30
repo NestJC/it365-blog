@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>페이지를 찾을 수 없습니다 (404 Not Found) | IT365.kr</title>
+  <meta name="description" content="요청하신 페이지가 이동되었거나 비공개 전환되었습니다." />
+  <meta name="robots" content="noindex, follow" />
+  
+  
+  
+  <link rel="canonical" href="https://it365.kr/404.html" />
+  
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="IT365.kr — 글로벌 AI & 테크 인사이트" href="https://it365.kr/ko/rss.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IT365.kr — 글로벌 AI & 테크 인사이트" />
+  <meta property="og:title" content="페이지를 찾을 수 없습니다 (404 Not Found) | IT365.kr" />
+  <meta property="og:description" content="요청하신 페이지가 이동되었거나 비공개 전환되었습니다." />
+  <meta property="og:url" content="https://it365.kr/404.html" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="/assets/global.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","headline":"페이지를 찾을 수 없습니다 (404 Not Found)","name":"IT365.kr — 글로벌 AI & 테크 인사이트","description":"요청하신 페이지가 이동되었거나 비공개 전환되었습니다.","inLanguage":"ko-KR","url":"https://it365.kr/404.html","publisher":{"@type":"Organization","name":"IT365.kr","url":"https://it365.kr","contactPoint":[{"@type":"ContactPoint","email":"editor@it365.kr","contactType":"editorial"},{"@type":"ContactPoint","email":"contact@it365.kr","contactType":"customer support"}]}}</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/ko/" class="brand">
+        <span class="brand-badge">IT365</span>
+        <span class="brand-text">테크 & AI 미디어</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/ko/" class="nav-link">홈</a>
+               <a href="/ko/#ai-issue" class="nav-link">일간 AI 이슈</a>
+               <a href="/ko/#bigtech-weekly" class="nav-link">빅테크·루머</a>
+               <a href="/ko/about/" class="nav-link">소개</a>
+               <a href="/ko/contact/" class="nav-link">의견·문의</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-switcher">
+          <a href="/ko/" class="lang-btn active">🇰🇷 한국어</a>
+          <a href="/en/" class="lang-btn ">🇺🇸 EN</a>
+        </div>
+        <button id="theme-toggle" class="theme-btn" type="button" aria-label="다크모드 전환">🌓</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article class="article-container" style="text-align:center; padding: 3rem 1.5rem;">
+    <h1>404 — 페이지를 찾을 수 없습니다</h1>
+    <p>요청하신 아티클이 비공개(초안) 상태로 전환되었거나 주소가 변경되었습니다.<br/>The requested page has been moved or set to private draft status.</p>
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/ko/" class="action-btn">🇰🇷 한국어 홈으로 이동 (/ko/)</a>
+      <a href="/en/" class="action-btn">🇺🇸 Go to English Home (/en/)</a>
+    </div>
+  </article>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IT365.kr</strong>
+        <p>글로벌 AI 모델 벤치마크, 빅테크 신제품 분석 및 실전 활용 가이드를 제공하는 한/영 다국어 테크 미디어입니다.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/ko/about/">미디어 소개 (About)</a>
+               <a href="/ko/privacy/">개인정보처리방침 (Privacy Policy)</a>
+               <a href="/ko/contact/">의견 · 문의 보내기 (Contact)</a>
+               <a href="/ko/rss.xml">RSS 피드</a>
+               <a href="/en/">English Edition</a>
+      </div>
+      <div class="footer-copy">© 2026 IT365.kr. All rights reserved.</div>
+    </div>
+  </footer>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('it365-theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('it365-theme', next);
+    });
+    document.querySelectorAll('[data-helpful-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => btn.classList.toggle('is-active'));
+    });
+    document.querySelectorAll('[data-share-btn]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const label = btn.querySelector('[data-share-label]');
+        const orig = label?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (label) {
+            label.textContent = document.documentElement.lang === 'ko' ? '주소 복사 완료! ✓' : 'Link Copied! ✓';
+            setTimeout(() => { label.textContent = orig; }, 2000);
+          }
+        } catch {}
+      });
+    });
+  </script>
+</body>
+</html>

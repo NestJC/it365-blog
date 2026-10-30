@@ -13,7 +13,7 @@ takeaways:
   - "단일 아티클의 포맷 준수율과 카피라이팅에서는 GPT-6.1 Sol이 강점을 보이며, 대용량 레퍼런스 종합 및 시리즈 원고 일괄 생성에서는 Gemini 4 Argon이 유리합니다."
 editorNote: "실제 제미나이 Pro 구독 환경과 안티그래비티(Antigravity) 에이전트 워크플로우에서 테스트해 본 결과, 별도 종량제 API 과금 없이도 Gemini 4 Argon의 긴 컨텍스트 유지력과 Few-shot 문체 복제 능력을 그대로 활용할 수 있어 개인 미디어 자동화 가성비가 매우 뛰어났습니다."
 coupangEnabled: false
-draft: false
+draft: true
 ---
 
 구글 딥마인드의 **Gemini 4 Argon**과 오픈AI의 **GPT-6.1 Sol**은 동일한 가격대에서 정면 승부를 벌이고 있는 주력 프론티어 추론 모델입니다. 두 모델 모두 약 100만 토큰급 입력 컨텍스트를 지원하지만, **최대 출력 길이(Output Limit)**와 **문서 작성 성향**에서는 분명한 차이를 보입니다.
